@@ -64,11 +64,11 @@ export default function HomePage({
       {/* 5 (PARENT). Top Picks for the Season showcase carousel */}
       <TopPicks onNavigate={onNavigate} onQuickView={onQuickView} onAddToCart={onAddToCart} />
 
-      {/* 5.1 & 5.2. Split informational features (Founder's & Private Label) */}
-      <FeatureBlocks onNavigate={onNavigate} />
+     {/* 5.1 & 5.2. Split informational features (Founder's & Private Label) */}
+    {/* <FeatureBlocks onNavigate={onNavigate} /> */}
 
-      {/* 5.3 & 5.4 & 5.5. Promo seasonal banner & Boutique/Wellness grid tiles */}
-      <PromoSections onNavigate={onNavigate} />
+     {/* 5.3 & 5.4 & 5.5. Promo seasonal banner & Boutique/Wellness grid tiles */}
+      {/* <PromoSections onNavigate={onNavigate} /> */}
 
       {/* 13 & 14. Brand Stories (Craftsmanship & Philosophy split columns) */}
       <BrandStories onNavigate={onNavigate} />
