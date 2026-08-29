@@ -8,7 +8,7 @@ import TopPicks from '../components/TopPicks';
 //import PromoSections from '../components/PromoSections';
 import BrandStories from '../components/BrandStories';
 import Testimonials from '../components/Testimonials';
-import MilestoneBanner from '../components/MilestoneBanner';
+//import MilestoneBanner from '../components/MilestoneBanner';
 import SupportStrip from '../components/SupportStrip';
 
 export default function HomePage({ 
@@ -77,7 +77,7 @@ export default function HomePage({
       <Testimonials />
 
       {/* 16. Anniversary milestone banner (stacked split columns) */}
-      <MilestoneBanner onNavigate={onNavigate} />
+      {/* <MilestoneBanner onNavigate={onNavigate} /> */}
 
       {/* 18. Support & trust payment method icons strip */}
       <SupportStrip />
