@@ -6409,6 +6409,48 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   object-fit: cover;
 }
+.video-hero-section {
+  position: relative;
+  width: 100%;
+  height: 650px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.video-hero-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.video-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+.video-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+  max-width: 800px;
+  padding: 24px;
+}
+.video-hero-content h2 {
+  font-size: 42px;
+  font-weight: 400;
+  margin-bottom: 12px;
+}
+.video-hero-content p {
+  font-size: 18px;
+  margin-bottom: 24px;
+}
+@media (max-width: 768px) {
+  .video-hero-section { height: 550px; }
+  .video-hero-content h2 { font-size: 28px; }
+}
 
 .qv-info-side {
   display: flex;
