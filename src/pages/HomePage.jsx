@@ -78,6 +78,22 @@ export default function HomePage({
 
       {/* 16. Anniversary milestone banner (stacked split columns) */}
       {/* <MilestoneBanner onNavigate={onNavigate} /> */}
+      {/* Short 5-second Milestone Video */}
+<section className="section milestone-video-section" style={{ padding: '60px 20px', textAlign: 'center' }}>
+  <video
+    src="/videos/Proper video Annette Pure.mp4"   // ← change path if needed
+    autoPlay
+    muted
+    loop
+    playsInline
+    style={{
+      width: '100%',
+      maxWidth: '900px',
+      borderRadius: '16px',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+    }}
+  />
+</section>
 
       {/* 18. Support & trust payment method icons strip */}
       <SupportStrip />
