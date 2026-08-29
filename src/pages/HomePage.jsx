@@ -79,20 +79,27 @@ export default function HomePage({
       {/* 16. Anniversary milestone banner (stacked split columns) */}
       {/* <MilestoneBanner onNavigate={onNavigate} /> */}
       {/* Short 5-second Milestone Video */}
-<section className="section milestone-video-section" style={{ padding: '60px 20px', textAlign: 'center' }}>
+<section className="video-hero-section">
   <video
-    src="/videos/Proper video Annette Pure.mp4"   // ← change path if needed
+    className="video-hero-media"
+    src="/video/Proper%20video%20Annette%20Pure.mp4"
     autoPlay
     muted
     loop
     playsInline
-    style={{
-      width: '100%',
-      maxWidth: '900px',
-      borderRadius: '16px',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-    }}
+    preload="metadata"
   />
+  <div className="video-hero-overlay" />
+  <div className="video-hero-content">
+    <h2>Classic Scents, Crafted with Care</h2>
+    <p>Hand-poured in our India atelier with 100% organic soy wax</p>
+    <button
+      className="btn-luxury-cta"
+      onClick={() => onNavigate && onNavigate('story')}
+    >
+      LEARN MORE
+    </button>
+  </div>
 </section>
 
       {/* 18. Support & trust payment method icons strip */}
