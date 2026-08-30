@@ -3,6 +3,8 @@
    ========================================================================== */
 
 /* Design Tokens & Custom Variables */
+
+/* Apply royal luxury color palette */
 :root {
   /* Royal Atelier palette */
   --bg-primary: #F3EDE0;          /* Champagne ivory page */
