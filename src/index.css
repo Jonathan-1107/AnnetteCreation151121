@@ -4,6 +4,42 @@
 
 /* Design Tokens & Custom Variables */
 :root {
+  /* Royal Atelier palette */
+  --bg-primary: #F3EDE0;          /* Champagne ivory page */
+  --bg-secondary: #E8DCC6;        /* Warm parchment sections */
+  --bg-card: #FFF9F0;             /* Pearl card */
+  --accent-dark: #0B1C36;         /* Royal midnight navy */
+  --accent-light: #E4D4B0;        /* Soft champagne line */
+  --accent-gold: #C9A227;         /* Royal gold */
+  --accent-gold-dark: #9A7614;    /* Deep gold hover */
+  --accent-gold-light: #F4E6C1;   /* Pale gold */
+  --text-main: #0B1C36;           /* Navy letters */
+  --text-muted: #5A5144;          /* Warm taupe body */
+  --text-light: #8A7D68;
+  --border-color: #D4C19A;
+  --border-subtle: rgba(201, 162, 39, 0.25);
+  --white: #FFF9F0;
+
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-script: 'Pinyon Script', cursive;
+
+  --transition-smooth: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: all 0.2s ease-out;
+
+  --max-width: 1440px;
+  --header-height: 86px;
+
+  --btn-bg: #0B1C36;              /* Navy buttons */
+  --btn-hover: #C9A227;           /* Gold on hover */
+  --shadow-sm: 0 4px 18px rgba(11, 28, 54, 0.08);
+  --shadow-md: 0 10px 32px rgba(11, 28, 54, 0.12);
+  --shadow-lg: 0 18px 50px rgba(11, 28, 54, 0.18);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+/*:root {
   --bg-primary: #FAF7F2;      /* Warm Alabaster Cream */
   --bg-secondary: #F3EFE9;    /* Soft Ivory Linen */
   --bg-card: #FFFFFF;         /* Crisp Warm White */
@@ -37,7 +73,7 @@
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
-}
+}*/
 
 /* Reset and Global Styles */
 *, *::before, *::after {
