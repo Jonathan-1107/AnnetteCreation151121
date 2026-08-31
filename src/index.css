@@ -6942,3 +6942,82 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-main);
   letter-spacing: 0.04em;
 }
+.question-footer {
+  padding: 0;
+  background: #fff;
+  border-top: 1px solid #d9d4c8;
+  border-bottom: 1px solid #d9d4c8;
+}
+
+.question-banner {
+  text-align: center;
+  padding: 56px 20px 48px;
+  background: #ffffff;
+}
+
+.question-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--accent-dark);
+  margin-bottom: 16px;
+}
+
+.question-call {
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.question-call a {
+  color: #3b4a8a;
+  text-decoration: underline;
+}
+
+.question-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 48px 40px;
+  background: var(--bg-primary);
+}
+
+.question-info-col {
+  text-align: center;
+}
+
+.question-info-heading {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  margin-bottom: 12px;
+}
+
+.question-info-text {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.payment-logo-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px 14px;
+}
+
+.payment-logo-img {
+  width: 56px;
+  height: 36px;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .question-info-row {
+    grid-template-columns: 1fr;
+    padding: 32px 20px;
+  }
+}
