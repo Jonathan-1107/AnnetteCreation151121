@@ -1,44 +1,53 @@
 import React from 'react';
-import { Phone, ShieldCheck, Leaf } from 'lucide-react';
+
+const PAYMENTS = [
+  { src: '/video/Google_pay.png', alt: 'Google Pay' },
+  { src: '/video/phone_pe.png', alt: 'PhonePe' },
+  { src: '/video/bhim_pay.png', alt: 'BHIM UPI' },
+  { src: '/video/pay_tm.png', alt: 'Paytm' },
+  { src: '/video/Ru_pay.png', alt: 'RuPay' },
+  { src: '/video/visa_card.png', alt: 'Visa' },
+  { src: '/video/Master_card.png', alt: 'Mastercard' },
+  { src: '/video/cash_on_delivery.png', alt: 'Cash on Delivery' },
+];
 
 export default function SupportStrip() {
-  const handlePhoneClick = () => {
-    window.location.href = "tel:+919820012345";
-  };
-
-  const paymentMethods = ["UPI", "Google Pay", "PhonePe", "Paytm", "RuPay", "Visa", "Mastercard", "NetBanking", "COD"];
-
   return (
-    <section className="support-strip-section">
-      <div className="support-strip-grid">
-        
-        {/* Phone Contact */}
-        <div className="support-item">
-          <Phone className="support-icon" size={24} strokeWidth={1.5} />
-          <h4 className="support-title">Concierge & Advice</h4>
-          <button className="support-link-btn" onClick={handlePhoneClick}>
-            +91 98200 12345 / 1800-266-8730
-          </button>
+    <section className="support-strip-section question-footer">
+      <div className="question-banner">
+        <h2 className="question-title">HAVE A QUESTION?</h2>
+        <p className="question-call">
+          Call us at{' '}
+          <a href="tel:+919820012345">(91) 98200-12345</a>
+          {' / '}
+          <a href="tel:18002668730">1800-266-8730</a>.
+        </p>
+      </div>
+
+      <div className="question-info-row">
+        <div className="question-info-col">
+          <h3 className="question-info-heading">ECO-CONSCIOUS PACKAGING</h3>
+          <p className="question-info-text">
+            Sustainably packaged for a lighter footprint
+          </p>
         </div>
 
-        {/* Eco Packaging */}
-        <div className="support-item">
-          <Leaf className="support-icon" size={24} strokeWidth={1.5} />
-          <h4 className="support-title">Eco-Conscious</h4>
-          <p className="support-desc">100% recyclable luxury packaging & pure soy</p>
-        </div>
-
-        {/* Secure Payments */}
-        <div className="support-item">
-          <ShieldCheck className="support-icon" size={24} strokeWidth={1.5} />
-          <h4 className="support-title">Instant Secure Payments</h4>
-          <div className="payment-icons">
-            {paymentMethods.map((method) => (
-              <span className="payment-badge" key={method}>{method}</span>
+        <div className="question-info-col">
+          <h3 className="question-info-heading">SECURE PAYMENT</h3>
+          <div className="payment-logo-row">
+            {PAYMENTS.map((p) => (
+              <img
+                key={p.src}
+                src={p.src}
+                alt={p.alt}
+                title={p.alt}
+                width={56}
+                height={36}
+                className="payment-logo-img"
+              />
             ))}
           </div>
         </div>
-
       </div>
     </section>
   );
