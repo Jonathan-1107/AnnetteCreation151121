@@ -23,7 +23,7 @@ export default function Footer({ onNavigate }) {
 
   return (
     <footer className="main-footer">
-      
+     {/* 
       {/* Footer Value Highlights Row */}
       <div className="footer-perks-strip">
         <div className="footer-perk-item">
@@ -55,7 +55,7 @@ export default function Footer({ onNavigate }) {
           </div>
         </div>
       </div>
-
+*/}
       <div className="footer-grid">
         
         {/* Brand Column */}
