@@ -89,12 +89,12 @@ export default function Header({
       ]
     },
     { 
-  name: 'Private Events & Gifting', 
+  name: 'Events & Gifting', 
   page: 'events',
   dropdown: [
     { name: 'Corporate Workshops', page: 'events', tab: 'corporate' },
     { name: 'Corporate Gifting Concierge', page: 'events', tab: 'gifting' },
-    { name: 'Private Candle Workshops', page: 'events', tab: 'private' }
+    { name: 'Candle Workshops', page: 'events', tab: 'private' }
   ]
 },
     { name: 'Sample Fragrances', page: 'samples' },
