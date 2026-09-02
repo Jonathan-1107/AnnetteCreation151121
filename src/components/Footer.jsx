@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Check, ShieldCheck, RefreshCw, Truck, Heart } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 
 export default function Footer({ onNavigate }) {
   const [email, setEmail] = useState('');
