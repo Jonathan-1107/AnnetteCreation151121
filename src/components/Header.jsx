@@ -88,6 +88,15 @@ export default function Header({
         { name: 'Clear Glasses', page: 'shop', category: 'Clear Glasses' }
       ]
     },
+    { 
+  name: 'Private Events & Gifting', 
+  page: 'events',
+  dropdown: [
+    { name: 'Corporate Workshops', page: 'events', tab: 'corporate' },
+    { name: 'Corporate Gifting Concierge', page: 'events', tab: 'gifting' },
+    { name: 'Private Candle Workshops', page: 'events', tab: 'private' }
+  ]
+},
     { name: 'Sample Fragrances', page: 'samples' },
     { name: 'Festive Collections', page: 'shop', category: 'Festive' },
     { name: 'Our Story', page: 'story' }
