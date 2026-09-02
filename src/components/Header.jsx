@@ -34,8 +34,8 @@ export default function Header({
           category: 'Christmas Festive Lights',
           children: [
             { name: 'Christmas Advent', page: 'shop', category: 'Christmas Advent' },
-            { name: 'Christmas Tin (2, 4, 6, 10, 12 Themed)', page: 'shop', category: 'Christmas Tin' },
-            { name: 'Tree Shaped Mold', page: 'shop', category: 'Tree Shaped Mold' }
+            { name: 'Themed Christmas Tin ', page: 'shop', category: 'Christmas Tin' },
+            { name: 'Christmas Tree Shape Mold', page: 'shop', category: 'Christmas Tree Shaped Mold' }
           ]
         },
         { 
@@ -44,7 +44,7 @@ export default function Header({
           category: 'Tealights',
           children: [
             { name: 'Rose', page: 'shop', category: 'Rose Tealight' },
-            { name: 'Shaped (Star, Flower, Butterfly, Heart)', page: 'shop', category: 'Shaped Tealight' }
+            { name: 'Small Shaped', page: 'shop', category: 'Shaped Tealight' }
           ]
         },
         { 
