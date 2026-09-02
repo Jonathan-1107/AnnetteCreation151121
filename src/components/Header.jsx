@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, User, ShoppingBag, Heart, Menu, X, ChevronDown } from 'lucide-react';
+import { Search, User, ShoppingBag, Heart, X, ChevronDown, ChevronRight } from 'lucide-react';
 
 export default function Header({ 
   cartCount = 0, 
@@ -11,16 +11,12 @@ export default function Header({
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileExpandedDropdown, setMobileExpandedDropdown] = useState(null);
+  const [mobileExpandedNested, setMobileExpandedNested] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Track scroll position to trigger transparent-to-solid transitions
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 30) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 30);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -32,40 +28,69 @@ export default function Header({
       page: 'shop',
       category: 'All Candles',
       dropdown: [
-        { name: "Signature Atelier Reserve", page: 'shop', category: "Signature Atelier", badge: "Signature" },
-        { name: "Luxury Collection", page: 'shop', category: "Luxury" },
-        { name: "For Him Collection", page: 'shop', category: "For Him" },
-        { name: "Wellness & Calm", page: 'shop', category: "Wellness" },
-        { name: "Heirloom Artisan", page: 'shop', category: "Heirloom Artisan" },
-        { name: "Heirloom Collector Glass", page: 'shop', category: "Heirloom Collector Glass", badge: "Exclusive" },
-        { name: "Heirloom Botanical", page: 'shop', category: "Heirloom Botanical" },
-        { name: "Discovery Samples", page: 'samples', category: "Samples" },
-        { name: "Artisan Accessories", page: 'shop', category: "Accessories" },
-        { name: "View All Candles", page: 'shop', category: "All Candles" }
+        { 
+          name: 'Christmas Festive Lights', 
+          page: 'shop', 
+          category: 'Christmas Festive Lights',
+          children: [
+            { name: 'Christmas Advent', page: 'shop', category: 'Christmas Advent' },
+            { name: 'Christmas Tin (2, 4, 6, 10, 12 Themed)', page: 'shop', category: 'Christmas Tin' },
+            { name: 'Tree Shaped Mold', page: 'shop', category: 'Tree Shaped Mold' }
+          ]
+        },
+        { 
+          name: 'Tealights', 
+          page: 'shop', 
+          category: 'Tealights',
+          children: [
+            { name: 'Rose', page: 'shop', category: 'Rose Tealight' },
+            { name: 'Shaped (Star, Flower, Butterfly, Heart)', page: 'shop', category: 'Shaped Tealight' }
+          ]
+        },
+        { 
+          name: 'Handcrafted Fragrance Candles', 
+          page: 'shop', 
+          category: 'Handcrafted Fragrance Candles',
+          children: [
+            { name: 'Matkas, Terracotta Diyas & Clay Handicraft', page: 'shop', category: 'Clay Handicraft' },
+            { name: 'Lotus Ceramic', page: 'shop', category: 'Lotus Ceramic' }
+          ]
+        },
+        { 
+          name: 'Molded Candles (Red, Any Color)', 
+          page: 'shop', 
+          category: 'Molded Candles',
+          children: [
+            { name: 'Pillar Candles (Love Embossed, Plain, Zig-Zag, Diamond, Marble)', page: 'shop', category: 'Pillar Candles' },
+            { name: 'Gothic Krafted (Artisan Regal, Red Line Pattern)', page: 'shop', category: 'Gothic Krafted' },
+            { name: 'Floral Design (Rose, Christmas Tree, Daisy)', page: 'shop', category: 'Floral Design' },
+            { name: 'Striped Candles (Rectangular, Circular)', page: 'shop', category: 'Striped Candles' }
+          ]
+        },
+        { 
+          name: 'Holistic Candles', 
+          page: 'shop', 
+          category: 'Holistic Candles',
+          children: [
+            { name: 'Long Embroidered Candles', page: 'shop', category: 'Long Embroidered Candles' }
+          ]
+        }
       ]
     },
-    { name: 'Private Label', page: 'private-label' },
+    { 
+      name: 'Fragrance Glass Bottles', 
+      page: 'shop', 
+      category: 'Fragrance Glass Bottles',
+      dropdown: [
+        { name: 'Glass Jars (Green & Red, Gold Interior)', page: 'shop', category: 'Glass Jars Gold Interior' },
+        { name: 'Brown (Matte and Clear)', page: 'shop', category: 'Brown Glass' },
+        { name: 'White Glasses', page: 'shop', category: 'White Glasses' },
+        { name: 'Clear Glasses', page: 'shop', category: 'Clear Glasses' }
+      ]
+    },
     { name: 'Sample Fragrances', page: 'samples' },
-    { name: 'Boutique', page: 'boutique' },
-    { name: 'Our Story', page: 'story' },
-    { 
-      name: 'Media', 
-      page: 'media',
-      dropdown: [
-        { name: 'Scent Journal (Blog)', page: 'media', tab: 'blog' },
-        { name: 'Podcast & Audio', page: 'media', tab: 'podcast' },
-        { name: 'Press & Accolades', page: 'media', tab: 'press' }
-      ]
-    },
-    { 
-      name: 'Private Events & Gifting', 
-      page: 'events',
-      dropdown: [
-        { name: 'Corporate Workshops', page: 'events', tab: 'corporate' },
-        { name: 'Corporate Gifting Concierge', page: 'events', tab: 'gifting' },
-        { name: 'Private Candle Workshops', page: 'events', tab: 'private' }
-      ]
-    }
+    { name: 'Festive Collections', page: 'shop', category: 'Festive' },
+    { name: 'Our Story', page: 'story' }
   ];
 
   const handleNavClick = (page, category = null, tab = null) => {
@@ -73,17 +98,23 @@ export default function Header({
       onNavigate(page, { category, tab });
     }
     setMobileMenuOpen(false);
+    setMobileExpandedDropdown(null);
+    setMobileExpandedNested(null);
   };
 
   const toggleMobileDropdown = (name) => {
-    setMobileExpandedDropdown(prev => prev === name ? null : name);
+    setMobileExpandedDropdown((prev) => (prev === name ? null : name));
+    setMobileExpandedNested(null);
+  };
+
+  const toggleMobileNested = (name) => {
+    setMobileExpandedNested((prev) => (prev === name ? null : name));
   };
 
   return (
     <header className={`main-header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="header-container">
         
-        {/* Left Side: Burger Menu + Brand Divider + Logo */}
         <div className="header-logo-group">
           <button 
             className="icon-btn header-burger-btn mobile-menu-btn" 
@@ -119,7 +150,6 @@ export default function Header({
           </button>
         </div>
 
-        {/* Center: Desktop Navigation Bar with Smooth Chevrons & Glassmorphic Dropdowns */}
         <nav className="desktop-nav" aria-label="Main Navigation">
           <ul className="nav-menu">
             {navLinks.map((nav) => {
@@ -143,7 +173,10 @@ export default function Header({
                     <div className="nav-dropdown-wrapper">
                       <ul className="nav-dropdown">
                         {nav.dropdown.map((sub) => (
-                          <li key={sub.name} className="dropdown-item">
+                          <li 
+                            key={sub.name} 
+                            className={`dropdown-item ${sub.children ? 'has-nested' : ''}`}
+                          >
                             <button 
                               className="dropdown-link"
                               onClick={(e) => {
@@ -152,10 +185,30 @@ export default function Header({
                               }}
                             >
                               <span className="dropdown-link-text">{sub.name}</span>
-                              {sub.badge && (
+                              {sub.children ? (
+                                <ChevronRight size={14} className="nested-chevron" />
+                              ) : sub.badge ? (
                                 <span className="dropdown-link-badge">{sub.badge}</span>
-                              )}
+                              ) : null}
                             </button>
+
+                            {sub.children && (
+                              <ul className="nav-nested-dropdown">
+                                {sub.children.map((child) => (
+                                  <li key={child.name} className="dropdown-item">
+                                    <button
+                                      className="dropdown-link"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleNavClick(child.page, child.category);
+                                      }}
+                                    >
+                                      <span className="dropdown-link-text">{child.name}</span>
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -167,7 +220,6 @@ export default function Header({
           </ul>
         </nav>
 
-        {/* Right Side Actions: Search, Wishlist, Account, Cart + Luxury Shop Now CTA */}
         <div className="header-actions">
           <div className="header-icons">
             <button 
@@ -223,7 +275,6 @@ export default function Header({
 
       </div>
 
-      {/* Slide-Out Drawer Navigation */}
       {mobileMenuOpen && (
         <div className="mobile-drawer-menu" onClick={() => setMobileMenuOpen(false)}>
           <div className="mobile-drawer-inner" onClick={(e) => e.stopPropagation()}>
@@ -284,17 +335,57 @@ export default function Header({
 
                     {nav.dropdown && isExpanded && (
                       <ul className="mobile-submenu">
-                        {nav.dropdown.map((sub) => (
-                          <li key={sub.name} className="mobile-subitem">
-                            <button 
-                              className="mobile-sublink"
-                              onClick={() => handleNavClick(sub.page, sub.category, sub.tab)}
-                            >
-                              <span>{sub.name}</span>
-                              {sub.badge && <span className="mobile-badge">{sub.badge}</span>}
-                            </button>
-                          </li>
-                        ))}
+                        {nav.dropdown.map((sub) => {
+                          const isNestedOpen = mobileExpandedNested === sub.name;
+                          return (
+                            <li key={sub.name} className="mobile-subitem">
+                              <div className="mobile-nav-link-row">
+                                <button 
+                                  className="mobile-sublink"
+                                  onClick={() => {
+                                    if (sub.children) {
+                                      toggleMobileNested(sub.name);
+                                    } else {
+                                      handleNavClick(sub.page, sub.category, sub.tab);
+                                    }
+                                  }}
+                                >
+                                  <span>{sub.name}</span>
+                                </button>
+                                {sub.children && (
+                                  <button
+                                    className="mobile-expand-btn"
+                                    onClick={() => toggleMobileNested(sub.name)}
+                                    aria-label="Expand nested menu"
+                                  >
+                                    <ChevronDown
+                                      size={14}
+                                      style={{
+                                        transform: isNestedOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                                        transition: 'transform 0.25s ease'
+                                      }}
+                                    />
+                                  </button>
+                                )}
+                              </div>
+
+                              {sub.children && isNestedOpen && (
+                                <ul className="mobile-nested-submenu">
+                                  {sub.children.map((child) => (
+                                    <li key={child.name} className="mobile-subitem">
+                                      <button
+                                        className="mobile-sublink mobile-nested-link"
+                                        onClick={() => handleNavClick(child.page, child.category)}
+                                      >
+                                        {child.name}
+                                      </button>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </li>
@@ -314,8 +405,6 @@ export default function Header({
                 <button onClick={() => handleNavClick('account')}>My Account</button>
                 <span>&bull;</span>
                 <button onClick={() => handleNavClick('contact')}>Help & FAQ</button>
-                <span>&bull;</span>
-                <button onClick={() => handleNavClick('boutique')}>Store Hours</button>
               </div>
             </div>
           </div>
