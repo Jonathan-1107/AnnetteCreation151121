@@ -57,7 +57,7 @@ export default function Header({
           ]
         },
         { 
-          name: 'Molded Candles (Red, Any Color)', 
+          name: 'Molded Candles', 
           page: 'shop', 
           category: 'Molded Candles',
           children: [
@@ -82,10 +82,10 @@ export default function Header({
       page: 'shop', 
       category: 'Fragrance Glass Bottles',
       dropdown: [
-        { name: 'Glass Jars (Green & Red, Gold Interior)', page: 'shop', category: 'Glass Jars Gold Interior' },
-        { name: 'Brown (Matte and Clear)', page: 'shop', category: 'Brown Glass' },
-        { name: 'White Glasses', page: 'shop', category: 'White Glasses' },
-        { name: 'Clear Glasses', page: 'shop', category: 'Clear Glasses' }
+        { name: 'Glass Jars (Green, Red, Gold Interior)', page: 'shop', category: 'Glass Jars Gold Interior' },
+        { name: 'Brown (Matte, Clear)', page: 'shop', category: 'Brown Glass' },
+        { name: 'White Glass', page: 'shop', category: 'White Glasses' },
+        { name: 'Clear Glass', page: 'shop', category: 'Clear Glasses' }
       ]
     },
     { 
