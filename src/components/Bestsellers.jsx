@@ -1,12 +1,15 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight, Star, ShoppingBag, Eye } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
+import { useProducts } from '../hooks/useProducts';
+
+const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 export default function Bestsellers({ onQuickView, onAddToCart, onNavigate }) {
   const scrollRef = useRef(null);
+  const { products, loading } = useProducts();
 
-  // Take the first 8 products as bestsellers / signature candles
-  const bestsellers = PRODUCTS.slice(0, 8);
+  // Pull only products flagged as bestsellers in Supabase, capped at 8
+  const bestsellers = products.filter((p) => p.isBestseller).slice(0, 8);
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -21,6 +24,9 @@ export default function Bestsellers({ onQuickView, onAddToCart, onNavigate }) {
       onNavigate('product', { product });
     }
   };
+
+  if (loading) return null;
+  if (bestsellers.length === 0) return null;
 
   return (
     <section className="section bestsellers-section" id="bestsellers">
@@ -46,9 +52,19 @@ export default function Bestsellers({ onQuickView, onAddToCart, onNavigate }) {
               
               <div className="product-img-wrapper" onClick={() => handleProductClick(product)}>
                 {product.tag && <span className="product-badge">{product.tag}</span>}
-                <img src={product.image} alt={product.title} className="product-img" />
+                <img
+                  src={product.image || PLACEHOLDER_IMAGE}
+                  alt={product.title}
+                  className="product-img"
+                  onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+                />
                 {product.hoverImage && (
-                  <img src={product.hoverImage} alt={`${product.title} alternate`} className="product-img-secondary" />
+                  <img
+                    src={product.hoverImage || PLACEHOLDER_IMAGE}
+                    alt={`${product.title} alternate`}
+                    className="product-img-secondary"
+                    onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+                  />
                 )}
                 
                 <div className="product-card-hover-actions">
@@ -107,7 +123,7 @@ export default function Bestsellers({ onQuickView, onAddToCart, onNavigate }) {
           className="btn-luxe"
           onClick={() => onNavigate && onNavigate('shop')}
         >
-          View All Candles ({PRODUCTS.length}) &rarr;
+          View All Candles ({products.length}) &rarr;
         </button>
       </div>
     </section>

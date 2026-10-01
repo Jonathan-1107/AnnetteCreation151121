@@ -1,6 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { Grid, List, Star, Eye, ShoppingBag, Heart, Search, X, Check } from 'lucide-react';
-import { PRODUCTS, CATEGORIES, SCENT_FAMILIES } from '../data/products';
+import { useProducts } from '../hooks/useProducts';
+import { SCENT_FAMILIES } from '../data/products';
+import { useCollections } from '../hooks/useCollections';
+import { COLLECTION_GROUPS } from '../data/collectionGroups';
+
+const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 export default function ShopPage({ 
   initialCategory = 'All Candles',
@@ -17,14 +22,19 @@ export default function ShopPage({
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [priceFilter, setPriceFilter] = useState('all'); // 'all', 'under1400', '1400to1800', 'over1800'
-
+  const { products, loading } = useProducts();
+  const { collections } = useCollections();
+  const CATEGORIES = ['All Candles', ...collections.map(c => c.name)];
   // Filter & Sort logic
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((product) => {
+    return products.filter((product) => {
       // Category filter
       if (selectedCategory !== 'All Candles') {
-        const matchesCat = product.category === selectedCategory || 
-                           product.collection?.toLowerCase().includes(selectedCategory.toLowerCase());
+        const groupMembers = COLLECTION_GROUPS[selectedCategory];
+        const matchesCat = groupMembers
+          ? groupMembers.some((name) => product.collection?.toLowerCase() === name.toLowerCase())
+          : product.category === selectedCategory ||
+            product.collection?.toLowerCase().includes(selectedCategory.toLowerCase());
         if (!matchesCat) return false;
       }
 
@@ -58,7 +68,7 @@ export default function ShopPage({
       if (sortBy === 'reviews') return (b.reviewCount || 0) - (a.reviewCount || 0);
       return 0; // 'featured'
     });
-  }, [selectedCategory, selectedScent, priceFilter, searchQuery, sortBy]);
+  }, [selectedCategory, selectedScent, priceFilter, searchQuery, sortBy, products]);
 
   const handleProductClick = (product) => {
     if (onNavigate) {
@@ -329,10 +339,20 @@ export default function ShopPage({
                           <Heart size={16} fill={isWishlisted ? "#B8925A" : "none"} stroke={isWishlisted ? "#B8925A" : "#2D2A26"} />
                         </button>
 
-                        <img src={product.image} alt={product.title} className="product-img" />
-                        {product.hoverImage && (
-                          <img src={product.hoverImage} alt={`${product.title} alternate`} className="product-img-secondary" />
-                        )}
+<img
+  src={product.image || PLACEHOLDER_IMAGE}
+  alt={product.title}
+  className="product-img"
+  onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+/>
+{product.hoverImage && (
+  <img
+    src={product.hoverImage || PLACEHOLDER_IMAGE}
+    alt={`${product.title} alternate`}
+    className="product-img-secondary"
+    onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+  />
+)}
                         
                         <div className="product-card-hover-actions">
                           <button 
@@ -360,7 +380,7 @@ export default function ShopPage({
 
                       <div className="product-info">
                         <span className="product-collection-label">{product.collection || product.category}</span>
-                        <h3 className="product-title" onClick={() => handleProductClick(product)}>{product.title}</h3>
+                      <h3 className="product-title" onClick={() => handleProductClick(product)}>{product.title}</h3>
                         
                         <div className="product-rating">
                           {[...Array(5)].map((_, i) => (
@@ -376,12 +396,6 @@ export default function ShopPage({
                           {product.comparePrice && (
                             <span className="product-price-compare">₹{product.comparePrice.toLocaleString('en-IN')}</span>
                           )}
-                        </div>
-
-                        <div className="product-card-footer-specs">
-                          <span>{product.scentFamily}</span>
-                          <span>&bull;</span>
-                          <span>{product.burnTime || '65 Hours'}</span>
                         </div>
 
                         {viewMode === 'list' && (

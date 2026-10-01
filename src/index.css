@@ -5,6 +5,7 @@
 /* Design Tokens & Custom Variables */
 
 /* Apply royal luxury color palette */
+
 :root {
   /* Royal Atelier palette */
   --bg-primary: #F3EDE0;          /* Champagne ivory page */
@@ -1259,12 +1260,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .product-title {
-  font-size: 1.35rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: normal;
+  line-height: 1.45;
   margin-bottom: 8px;
   cursor: pointer;
   transition: color 0.2s ease;
+  color: var(--text-main);
+}
+
+.product-title:hover {
+  color: var(--accent-gold);
 }
 
 .product-title:hover {
@@ -2593,18 +2601,31 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .pdp-collection-eyebrow {
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent-gold);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .pdp-title {
-  font-size: clamp(2.2rem, 3.8vw, 3rem);
-  line-height: 1.12;
+  font-family: var(--font-body);
+  font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.4;
   margin-bottom: 12px;
+  color: var(--text-main);
+}
+
+.pdp-sku {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 14px;
 }
 
 .pdp-rating-row {
@@ -4493,6 +4514,153 @@ h1, h2, h3, h4, h5, h6 {
 /* ==========================================================================
    15. EVENTS & WORKSHOPS PAGE
    ========================================================================== */
+/* ==========================================================================
+   15. EVENTS & WORKSHOPS PAGE
+   ========================================================================== */
+
+/* Hero Section - Shared styles with other pages */
+.events-hero {
+  position: relative;
+  min-height: 480px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.events-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(45, 42, 38, 0.72);
+}
+
+.events-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  color: var(--white);
+}
+
+.events-eyebrow {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-gold-light);
+  margin-bottom: 14px;
+  display: block;
+}
+
+.events-title {
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  color: var(--white);
+  line-height: 1.12;
+  margin-bottom: 18px;
+}
+
+.events-tagline {
+  font-size: 1rem;
+  opacity: 0.92;
+  line-height: 1.7;
+  margin-bottom: 30px;
+}
+
+/* Why Events Section */
+.events-why-section {
+  padding: 80px 24px;
+}
+
+.events-why-section .section-intro {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* Process Grid */
+.events-process-section {
+  padding: 80px 24px;
+}
+
+.events-process-section .section-intro {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.events-grid-4 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 40px;
+}
+
+.event-process-step {
+  flex: 1 1 220px;
+  max-width: 260px;
+  position: relative;
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 32px 24px;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.event-process-step:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.event-process-num {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  color: var(--accent-gold);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.event-icon-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  color: var(--accent-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 1.6rem;
+}
+
+.event-card-title {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  line-height: 1.25;
+}
+
+.event-card-desc {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+  .events-grid-4 {
+    flex-direction: column;
+    align-items: center;
+  }
+  .event-process-step {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+/* Event Offerings Grid */
 .events-grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -4514,22 +4682,14 @@ h1, h2, h3, h4, h5, h6 {
   transition: var(--transition-smooth);
 }
 
+.event-offering-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
 .event-offering-card.highlighted {
   border-color: var(--accent-gold);
   background-color: var(--accent-gold-light);
-  transform: translateY(-4px);
-}
-
-.event-icon-circle {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background-color: var(--bg-primary);
-  color: var(--accent-gold);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
 }
 
 .event-card-tag {
@@ -4538,18 +4698,8 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent-gold);
-}
-
-.event-card-title {
-  font-size: 1.6rem;
-  margin: 6px 0 12px;
-}
-
-.event-card-desc {
-  font-size: 0.88rem;
-  color: var(--text-muted);
-  line-height: 1.65;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
+  display: block;
 }
 
 .event-perks-list {
@@ -4561,8 +4711,10 @@ h1, h2, h3, h4, h5, h6 {
   gap: 8px;
   padding-top: 15px;
   border-top: 1px solid var(--border-color);
+  margin-top: 20px;
 }
 
+/* Highlight Strip Section */
 .events-highlight-strip {
   background-color: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
@@ -4582,17 +4734,18 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 860px) {
   .events-highlight-container {
     grid-template-columns: 1fr;
+    gap: 40px;
   }
 }
 
-.events-highlight-img {
+.events-highlight-img-wrap {
   height: 440px;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
 }
 
-.events-highlight-img img {
+.events-highlight-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -4611,12 +4764,49 @@ h1, h2, h3, h4, h5, h6 {
 .workshop-feature-item strong {
   font-size: 0.95rem;
   color: var(--accent-dark);
+  display: block;
+  margin-bottom: 4px;
 }
 
 .workshop-feature-item p {
   font-size: 0.86rem;
   color: var(--text-muted);
   line-height: 1.6;
+  margin: 0;
+}
+
+/* Emotional Close Section */
+.events-emotional-close {
+  background: var(--accent-dark);
+  padding: 100px 24px;
+  text-align: center;
+}
+
+.events-emotional-content {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.events-emotional-title {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.4;
+  color: var(--white);
+  font-weight: 400;
+  margin-bottom: 36px;
+}
+
+.events-emotional-close .btn-luxury-cta {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .events-emotional-close {
+    padding: 60px 20px;
+  }
+  .events-emotional-title {
+    margin-bottom: 24px;
+  }
 }
 
 /* ==========================================================================
@@ -5689,7 +5879,136 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   text-decoration: underline;
 }
+/* ==========================================================================
+   21. AUTH METHOD TABS & OTP VERIFICATION (Account Login / Signup)
+   Append this block to index.css, after Section 20 (Footer).
+   ========================================================================== */
 
+/* Email / Mobile Number tab selector, shown after "Create one here" */
+.auth-method-tabs {
+  display: flex;
+  gap: 6px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 5px;
+  margin-bottom: 25px;
+}
+
+.auth-method-tab {
+  flex: 1;
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.auth-method-tab:hover {
+  color: var(--accent-gold-dark);
+}
+
+.auth-method-tab.active {
+  background-color: var(--white);
+  color: var(--accent-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Inline validation message, e.g. password mismatch */
+.auth-error-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: #B23B3B;
+  text-align: left;
+  margin: -10px 0 16px;
+}
+
+/* Helper / status copy, e.g. "OTP sent to +91..." or resend timers */
+.auth-info-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  text-align: center;
+  margin: -8px 0 18px;
+}
+
+.auth-info-text button,
+.auth-info-text .text-link {
+  color: var(--accent-gold-dark);
+  font-weight: 600;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.auth-info-text button:disabled {
+  color: var(--text-light);
+  text-decoration: none;
+  cursor: not-allowed;
+}
+
+/* OTP digit boxes */
+.otp-input-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.otp-input {
+  width: 48px;
+  height: 56px;
+  text-align: center;
+  border: 1.5px solid var(--border-color);
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-main);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.otp-input:focus {
+  border-color: var(--accent-gold);
+  background-color: var(--white);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.15);
+}
+
+.otp-input.filled {
+  border-color: var(--accent-gold);
+  background-color: var(--white);
+}
+
+.otp-input.invalid {
+  border-color: #B23B3B;
+  background-color: #FBEDEC;
+}
+
+@media (max-width: 420px) {
+  .otp-input {
+    width: 42px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+  .otp-input-row {
+    gap: 7px;
+  }
+}
 /* ==========================================================================
    18. CONTACT & FAQ PAGE
    ========================================================================== */

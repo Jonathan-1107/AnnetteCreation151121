@@ -3,7 +3,7 @@ import {
   Star, Heart, ShoppingBag, Truck, ShieldCheck, RefreshCw, 
   ChevronDown, ChevronUp, Plus, Minus, Check, Sparkles, MessageSquare 
 } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
+import { useProducts } from '../hooks/useProducts';
 
 export default function ProductDetailPage({ 
   product, 
@@ -13,7 +13,24 @@ export default function ProductDetailPage({
   onToggleWishlist 
 }) {
   // If no product is passed, fallback to the first bestseller
-  const currentProduct = product || PRODUCTS[0];
+  const { products: allProducts } = useProducts();
+  const currentProduct = product || allProducts[0] || {};
+    if (!currentProduct || !currentProduct.title) {
+    return (
+      <div className="pdp-page" style={{ padding: '80px 20px', textAlign: 'center' }}>
+        <h2 style={{ marginBottom: '12px' }}>Product not found</h2>
+        <p style={{ color: '#8A8478', marginBottom: '24px' }}>
+          We couldn't find that candle. It may have been removed or the link is incorrect.
+        </p>
+        <button
+          className="btn-luxury-cta"
+          onClick={() => onNavigate && onNavigate('shop')}
+        >
+          Browse our collection &rarr;
+        </button>
+      </div>
+    );
+  }
 
   const images = currentProduct.images && currentProduct.images.length > 0 
     ? currentProduct.images 
@@ -23,7 +40,9 @@ export default function ProductDetailPage({
   const [purchaseType, setPurchaseType] = useState('onetime'); // 'onetime' | 'subscription'
   const [subFrequency, setSubFrequency] = useState('60'); // days
   const [quantity, setQuantity] = useState(1);
-  const [activeAccordion, setActiveAccordion] = useState('notes'); // 'notes' | 'care' | 'ingredients' | 'shipping'
+   const [activeAccordion, setActiveAccordion] = useState('notes'); // 'notes' | 'care' | 'ingredients' | 'shipping'
+  const SCENT_TABS = ['Scent 1', 'Scent 2']; // rename to real fragrance names later, e.g. ['Vanilla', 'Lavender'], add more as needed
+  const [activeScentTab, setActiveScentTab] = useState(SCENT_TABS[0]);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [addedToast, setAddedToast] = useState(false);
 
@@ -83,7 +102,9 @@ export default function ProductDetailPage({
     }
   };
 
-  const relatedProducts = PRODUCTS.filter(p => p.id !== currentProduct.id).slice(0, 4);
+    const relatedProducts = allProducts
+    .filter(p => p.id !== currentProduct.id && p.collection === currentProduct.collection)
+    .slice(0, 4);
 
   return (
     <div className="pdp-page">
@@ -126,7 +147,10 @@ export default function ProductDetailPage({
             </button>
           </div>
 
-          {images.length > 1 && (
+          
+
+          {/* Value Props Strip */}
+                  {images.length > 1 && (
             <div className="pdp-thumbnail-row">
               {images.map((img, idx) => (
                 <button
@@ -140,28 +164,46 @@ export default function ProductDetailPage({
             </div>
           )}
 
-          {/* Value Props Strip */}
-          <div className="pdp-perks-box">
-            <div className="pdp-perk">
-              <Truck size={16} />
-              <span>Complimentary Pan-India Shipping on Orders ₹1,499+</span>
+          {/* Candle Specifications Table */}
+          <div className="pdp-specs-grid">
+            <div className="spec-item">
+              <span className="spec-label">Wax Composition</span>
+              <span className="spec-value">{currentProduct.waxType || '100% Organic Soy'}</span>
             </div>
-            <div className="pdp-perk">
-              <ShieldCheck size={16} />
-              <span>100% Organic Soy & Non-Toxic Guarantee</span>
+            <div className="spec-item">
+              <span className="spec-label">Burn Time</span>
+              <span className="spec-value">{currentProduct.burnTime || '60-70 Hours'}</span>
             </div>
-            <div className="pdp-perk">
-              <RefreshCw size={16} />
-              <span>Happiness Guarantee & Complimentary Exchanges</span>
+            <div className="spec-item">
+              <span className="spec-label">Wick Type</span>
+              <span className="spec-value">{currentProduct.wick || 'Lead-Free Braided Cotton'}</span>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Net Weight</span>
+              <span className="spec-value">{currentProduct.netWeight || '11 oz / 312g'}</span>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Vessel Material</span>
+              <span className="spec-value">{currentProduct.vessel || 'Matte Amber Heavy Glass'}</span>
+            </div>
+            <div className="spec-item">
+              <span className="spec-label">Origin</span>
+              <span className="spec-value">Hand-Poured in India Atelier</span>
             </div>
           </div>
-        </div>
+        </div>  
+    
 
         {/* Right Column: Product Info & Purchase Form */}
         <div className="pdp-info-col">
           
           <span className="pdp-collection-eyebrow">{currentProduct.collection || currentProduct.category}</span>
           <h1 className="pdp-title">{currentProduct.title}</h1>
+          {currentProduct.sku && (
+            <p className="pdp-sku">SKU {currentProduct.sku}</p>
+          )}
+
+          {/* Rating Summary */}
 
           {/* Rating Summary */}
           <div className="pdp-rating-row">
@@ -187,91 +229,35 @@ export default function ProductDetailPage({
           </div>
 
           {/* Tagline */}
-          <p className="pdp-tagline"><em>"{currentProduct.tagline}"</em></p>
-
-          {/* Description */}
-          <p className="pdp-description">{currentProduct.description}</p>
+                  {/* Scent Tabs — rename SCENT_TABS below as you add real fragrance variants */}
+          <div className="pdp-scent-tabs-row" style={{ display: 'flex', gap: '8px', margin: '12px 0' }}>
+            {SCENT_TABS.map((scent) => (
+              <button
+                key={scent}
+                onClick={() => setActiveScentTab(scent)}
+                style={{
+                  flex: 1,
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: activeScentTab === scent ? '1px solid #B8925A' : '1px solid #E5DFD7',
+                  background: activeScentTab === scent ? '#FAF3E8' : 'transparent',
+                  color: activeScentTab === scent ? '#8A6D3B' : '#5F5E5A',
+                  fontSize: '0.85rem',
+                  fontWeight: 500,
+                  cursor: 'pointer'
+                }}
+              >
+                {scent}
+              </button>
+            ))}
+          </div>
 
           {/* Scent Pyramid Visual Card */}
-          {currentProduct.scentPyramid && (
-            <div className="pdp-pyramid-card">
-              <div className="pyramid-header">
-                <Sparkles size={15} />
-                <span>Olfactory Scent Pyramid</span>
-              </div>
-              <div className="pyramid-tiers">
-                <div className="pyramid-tier top-tier">
-                  <span className="tier-label">Top Notes (Initial 15 mins):</span>
-                  <span className="tier-notes">{currentProduct.scentPyramid.top.join(' &bull; ')}</span>
-                </div>
-                <div className="pyramid-tier heart-tier">
-                  <span className="tier-label">Heart Notes (Full Bloom):</span>
-                  <span className="tier-notes">{currentProduct.scentPyramid.heart.join(' &bull; ')}</span>
-                </div>
-                <div className="pyramid-tier base-tier">
-                  <span className="tier-label">Base Notes (Lingering Warmth):</span>
-                  <span className="tier-notes">{currentProduct.scentPyramid.base.join(' &bull; ')}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
+         
+          
           {/* Purchase Options Selector (One-Time vs Subscribe & Save) */}
-          <div className="pdp-purchase-options">
-            
-            {/* Option 1: One-Time Purchase */}
-            <div 
-              className={`pdp-purchase-card ${purchaseType === 'onetime' ? 'selected' : ''}`}
-              onClick={() => setPurchaseType('onetime')}
-            >
-              <div className="purchase-radio">
-                <div className={`radio-dot ${purchaseType === 'onetime' ? 'active' : ''}`} />
-              </div>
-              <div className="purchase-label">
-                <strong>One-Time Purchase</strong>
-                <span>Single hand-poured vessel</span>
-              </div>
-              <div className="purchase-card-price">
-                ₹{currentProduct.price.toLocaleString('en-IN')}
-              </div>
-            </div>
-
-            {/* Option 2: Subscribe & Save */}
-            <div 
-              className={`pdp-purchase-card ${purchaseType === 'subscription' ? 'selected' : ''}`}
-              onClick={() => setPurchaseType('subscription')}
-            >
-              <div className="purchase-radio">
-                <div className={`radio-dot ${purchaseType === 'subscription' ? 'active' : ''}`} />
-              </div>
-              <div className="purchase-label">
-                <div className="sub-tag-group">
-                  <strong>Subscribe & Save 10%</strong>
-                  <span className="sub-save-tag">Best Value</span>
-                </div>
-                <span>Free shipping &bull; Pause or cancel anytime</span>
-                
-                {purchaseType === 'subscription' && (
-                  <div className="sub-frequency-picker" onClick={(e) => e.stopPropagation()}>
-                    <span>Deliver every:</span>
-                    <select 
-                      value={subFrequency} 
-                      onChange={(e) => setSubFrequency(e.target.value)}
-                      className="sub-select"
-                    >
-                      <option value="30">30 Days (Monthly Ritual)</option>
-                      <option value="60">60 Days (Recommended)</option>
-                      <option value="90">90 Days (Quarterly)</option>
-                    </select>
-                  </div>
-                )}
-              </div>
-              <div className="purchase-card-price">
-                ₹{Math.round(currentProduct.price * 0.9).toLocaleString('en-IN')}
-              </div>
-            </div>
-
-          </div>
+         
+          
 
           {/* Quantity & Add to Cart Action Row */}
           <div className="pdp-action-row">
@@ -319,32 +305,12 @@ export default function ProductDetailPage({
           )}
 
           {/* Candle Specifications Table */}
-          <div className="pdp-specs-grid">
-            <div className="spec-item">
-              <span className="spec-label">Wax Composition</span>
-              <span className="spec-value">{currentProduct.waxType || '100% Organic Soy'}</span>
-            </div>
-            <div className="spec-item">
-              <span className="spec-label">Burn Time</span>
-              <span className="spec-value">{currentProduct.burnTime || '60-70 Hours'}</span>
-            </div>
-            <div className="spec-item">
-              <span className="spec-label">Wick Type</span>
-              <span className="spec-value">{currentProduct.wick || 'Lead-Free Braided Cotton'}</span>
-            </div>
-            <div className="spec-item">
-              <span className="spec-label">Net Weight</span>
-              <span className="spec-value">{currentProduct.netWeight || '11 oz / 312g'}</span>
-            </div>
-            <div className="spec-item">
-              <span className="spec-label">Vessel Material</span>
-              <span className="spec-value">{currentProduct.vessel || 'Matte Amber Heavy Glass'}</span>
-            </div>
-            <div className="spec-item">
-              <span className="spec-label">Origin</span>
-              <span className="spec-value">Hand-Poured in India Atelier</span>
-            </div>
-          </div>
+          
+
+          {/* Scent Pyramid Visual Card */}
+          
+
+          {/* Accordion Tabs */}
 
           {/* Accordion Tabs */}
           <div className="pdp-accordions-group">
@@ -402,7 +368,7 @@ export default function ProductDetailPage({
                 <div className="accordion-body-content">
                   <p>At Annette Pure, your health and indoor air quality are sacred. We strictly formulate without:</p>
                   <ul className="clean-standards-list">
-                    <li>&bull; Zero Paraffin Petroleum Wax</li>
+                    <li>&bull; Zero Paraffin / Petroleum Wax</li>
                     <li>&bull; Zero Phthalates or Synthetic Parabens</li>
                     <li>&bull; Zero Lead or Metal Core Wicks</li>
                     <li>&bull; 100% Cruelty-Free & Vegan Ingredients</li>
@@ -422,13 +388,13 @@ export default function ProductDetailPage({
               </button>
               {activeAccordion === 'shipping' && (
                 <div className="accordion-body-content">
-                  <p><strong>Pan-India Shipping:</strong> Complimentary express shipping on all orders ₹1,499+. Standard shipping (₹99) arrives in 2-4 business days via Blue Dart / Delhivery.</p>
-                  <p><strong>Happiness Guarantee:</strong> If a scent doesn't resonate with you, contact our concierge within 30 days for a complimentary exchange or full refund.</p>
+                  <p><strong>Pan-India Shipping:</strong>Standard shipping/Courier arrives quickly via postal Services or Courier.</p>
+                  <p><strong>Happiness Guarantee:</strong> If a scent doesn't resonate with you, contact our sales team for further discussion</p>
                 </div>
               )}
             </div>
 
-          </div>
+          </div> 
 
         </div>
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from './hooks/useAuth';
 
 // Global Layout Components
 import AnnouncementBar from './components/AnnouncementBar';
@@ -20,14 +21,17 @@ import CheckoutPage from './pages/CheckoutPage';
 import AccountPage from './pages/AccountPage';
 import ContactFaqPage from './pages/ContactFaqPage';
 import PoliciesPage from './pages/PoliciesPage';
+import LoginPage from './pages/LoginPage';
 
 // Default Product Data
 import { PRODUCTS } from './data/products';
 
 function App() {
+  const { user, loading: authLoading, signOut } = useAuth();
   // Navigation & Routing State
   const [currentPage, setCurrentPage] = useState('home');
   const [navParams, setNavParams] = useState({});
+ 
 
   // Cart State (Persisted)
   const [cartItems, setCartItems] = useState(() => {
@@ -105,26 +109,27 @@ function App() {
 
   // Cart Operations
   const handleAddToCart = (product, quantity = 1) => {
-    setCartItems((prevItems) => {
-      const existing = prevItems.find((item) => item.id === product.id);
-      if (existing) {
-        return prevItems.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
-        );
+  setCartItems((prevItems) => {
+    const existing = prevItems.find((item) => item.id === product.id);
+    if (existing) {
+      return prevItems.map((item) =>
+        item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
+      );
+    }
+    return [
+      ...prevItems,
+      {
+        id: product.id,
+        sku: product.sku,
+        title: product.title,
+        price: product.price,
+        image: product.image,
+        quantity
       }
-      return [
-        ...prevItems,
-        {
-          id: product.id,
-          title: product.title,
-          price: product.price,
-          image: product.image,
-          quantity
-        }
-      ];
-    });
-    setIsCartOpen(true);
-  };
+    ];
+  });
+  setIsCartOpen(true);
+};
 
   const handleUpdateQty = (id, newQty) => {
     if (newQty <= 0) {
@@ -180,6 +185,7 @@ function App() {
         onSearchOpen={() => setIsSearchOpen(true)}
         currentPage={currentPage}
         onNavigate={handleNavigate}
+        user={user}
       />
 
       {/* 3. Main Multi-Page Route Render */}
@@ -191,6 +197,9 @@ function App() {
             onAddToCart={handleAddToCart}
             onNavigate={handleNavigate}
           />
+        )}
+        {currentPage === 'login' && (
+        <LoginPage onNavigate={handleNavigate} />
         )}
 
         {currentPage === 'shop' && (
@@ -254,27 +263,33 @@ function App() {
           />
         )}
 
-        {currentPage === 'checkout' && (
-          <CheckoutPage
-            cartItems={cartItems}
-            onClearCart={handleClearCart}
-            onNavigate={handleNavigate}
-            appliedDiscount={navParams.appliedDiscount || 0}
-            initialGiftMessage={navParams.giftMessage || ''}
-            onAddOrder={handleAddOrder}
-          />
-        )}
+  {currentPage === 'checkout' && (
+  <CheckoutPage
+    cartItems={cartItems}
+    onClearCart={handleClearCart}
+    onNavigate={handleNavigate}
+    appliedDiscount={navParams.appliedDiscount || 0}
+    initialGiftMessage={navParams.giftMessage || ''}
+    onAddOrder={handleAddOrder}
+    user={user}
+  />
+)}
 
-        {currentPage === 'account' && (
-          <AccountPage
-            initialTab={navParams.tab || 'overview'}
-            orders={orders}
-            wishlist={wishlist}
-            onAddToCart={handleAddToCart}
-            onToggleWishlist={handleToggleWishlist}
-            onNavigate={handleNavigate}
-          />
-        )}
+{currentPage === 'account' && (
+  <AccountPage
+    initialTab={navParams.tab || 'overview'}
+    wishlist={wishlist}
+    onAddToCart={handleAddToCart}
+    onToggleWishlist={handleToggleWishlist}
+    onNavigate={handleNavigate}
+    user={user}
+    signOut={signOut}
+  />
+)}
+
+{currentPage === 'login' && (
+  <LoginPage onNavigate={handleNavigate} />
+)}
 
         {currentPage === 'contact' && (
           <ContactFaqPage

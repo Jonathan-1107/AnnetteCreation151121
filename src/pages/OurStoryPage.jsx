@@ -1,85 +1,99 @@
-import React from 'react';
-import { Sparkles, Heart, ShieldCheck, RefreshCw, Award, ArrowRight } from 'lucide-react';
-import milestoneImg from '../assets/milestone_banner.png';
-import foundersImg from '../assets/founders_collection.png';
-import wellnessImg from '../assets/wellness_collection.png';
-import boutiqueImg from '../assets/boutique_collection.png';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
+
+const PLACEHOLDER_IMAGE = '/placeholder.svg';
+
+// Pick n random, distinct images from an array
+function pickRandom(arr, n) {
+  const shuffled = [...arr].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, n);
+}
 
 export default function OurStoryPage({ onNavigate }) {
-  const milestones = [
-    {
-      year: "2004",
-      title: "The First Atelier Pour",
-      description: "Frustrated by synthetic paraffin candles causing persistent headaches, our founding chandlers began melting natural organic soy wax and blending pure botanical oils in small handcrafted batches."
-    },
-    {
-      year: "2010",
-      title: "Flagship Experiential Studios",
-      description: "Annette Pure expanded into experiential studio ateliers, establishing open-studio workshops where patrons could watch candles hand-poured in real time and explore bespoke fragrance blending."
-    },
-    {
-      year: "2016",
-      title: "Indian Botanical & Artisan Collaborations",
-      description: "Partnered with master glassblowers and sustainable botanical cultivators across Mysore, Kashmir, and Kerala to create everlasting sculptural vessels and pure regional scent accords."
-    },
-    {
-      year: "2021",
-      title: "The Circular Eco-Refill Bar",
-      description: "Pioneered in-store circular refills, allowing candle lovers to bring in empty vessels to be cleaned and refilled at special rates, diverting thousands of vessels from landfills."
-    },
-    {
-      year: "2026",
-      title: "Over 20 Years of Master Craftsmanship",
-      description: "Celebrating over two decades of uncompromising non-toxic quality, sustainable luxury, and illuminating over 50,000 sanctuaries across India and beyond."
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    async function fetchImages() {
+      const { data, error } = await supabase
+        .from('products')
+        .select('image_url')
+        .not('image_url', 'is', null);
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+      const urls = data.map((p) => p.image_url).filter(Boolean);
+      setImages(pickRandom(urls, 5));
     }
+    fetchImages();
+  }, []);
+
+  const heroImg = images[0] || PLACEHOLDER_IMAGE;
+  const founderImg = images[1] || images[0] || PLACEHOLDER_IMAGE;
+  const galleryImgs = [
+    images[2] || images[0] || PLACEHOLDER_IMAGE,
+    images[3] || images[1] || PLACEHOLDER_IMAGE,
+    images[4] || images[0] || PLACEHOLDER_IMAGE
   ];
 
   return (
     <div className="story-page">
-      
-      {/* Hero Section */}
-      <section 
+
+      {/* Hero Section — static wide image */}
+      <section
         className="story-hero"
-        style={{ backgroundImage: `url(${milestoneImg})` }}
+        style={{ backgroundImage: `url(${heroImg})` }}
       >
         <div className="story-hero-overlay" />
         <div className="story-hero-content">
-          <span className="story-hero-eyebrow">The Annette Pure Heritage</span>
-          <h1 className="story-hero-title">Over 20 Years of Love, Scent & Intention</h1>
+          <span className="story-hero-eyebrow">The Annette Pure Story</span>
+          <h1 className="story-hero-title">Responsible Indulgence, Beautifully Poured</h1>
           <p className="story-hero-tagline">
-            We believe home is sacred. For over two decades, we have crafted non-toxic, hand-poured soy candles that elevate daily rituals and honor the quiet moments of life.
+            An eco-friendly candle brand merging sustainability with sophistication, offering a guilt-free escape into luxury.
           </p>
         </div>
       </section>
 
-      {/* Atelier Manifesto Section */}
+      {/* Our Story Section */}
       <section className="section founder-letter-section">
         <div className="founder-letter-container">
-          
+
           <div className="founder-img-col">
             <div className="founder-img-frame">
-              <img src={foundersImg} alt="Atelier Master Chandler Craft" className="founder-portrait" />
-              <div className="founder-frame-badge">Master Chandler Atelier</div>
+              <img
+                src={founderImg}
+                alt="Annette Pure Handcrafted Candle"
+                className="founder-portrait"
+                onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+              />
+              <div className="founder-frame-badge">Hand-Poured, Always</div>
             </div>
           </div>
 
           <div className="founder-text-col">
-            <span className="section-eyebrow">The Atelier Manifesto</span>
-            <h2 className="founder-heading">"Scent is the invisible poetry of the home."</h2>
-            
+            <span className="section-eyebrow">Our Philosophy</span>
+            <h2 className="founder-heading">"True luxury need not compromise conscience."</h2>
+
             <p className="founder-p">
-              When our first batch of soy candles was poured over twenty years ago, the luxury home fragrance market was dominated by paraffin wax, synthetic dyes, and heavy chemical stabilizers that caused headaches.
+              In a world increasingly conscious of environmental impact, Annette Pure emerges as a beacon of responsible indulgence. This eco-friendly candle brand transcends the ordinary by merging sustainability with sophistication, offering consumers a guilt-free escape into luxury.
             </p>
             <p className="founder-p">
-              We set out to create something truly pure: candles formulated from 100% natural organic soy wax and pure botanical essential oils that fill an entire room with complex, evocative ambiance without polluting indoor air.
+              At Annette Pure's core lies an unwavering commitment to purity. Each candle is meticulously crafted from <strong>100% soy wax</strong>—a renewable, plant-based alternative that burns cleaner and longer than traditional paraffin. Paired with premium essential oil fragrances, every product delivers an authentic olfactory experience untainted by synthetic additives or harmful parabens.
             </p>
             <p className="founder-p">
-              To this day, every single candle is poured in small micro-batches of twelve. We hand-trim and center each braided cotton wick, and cure each vessel for two weeks before packaging.
+              The brand's dedication to safety extends throughout its design. Cotton wicks ensure a steady, non-toxic burn, while the carefully curated color palette reflects both aesthetic appeal and natural pigmentation.
+            </p>
+            <p className="founder-p">
+              Annette Pure's collection caters to diverse preferences—from elegantly housed glass jar candles that serve as décor pieces, to festive limited editions and intricately moulded designs. There's an Annette Pure creation for every occasion and mood.
+            </p>
+            <p className="founder-p">
+              Yet sustainability isn't sacrificed for presentation. Luxurious, thoughtfully designed packaging protects products while minimizing environmental footprint—every element deliberate, every choice conscious.
             </p>
 
             <div className="founder-signature-block">
               <span className="founder-signature-text">Annette Pure</span>
-              <span className="founder-title-text">Master Chandler Studio & Atelier Lab</span>
+              <span className="founder-title-text">Responsible Luxury, Hand-Poured in India</span>
             </div>
           </div>
 
@@ -94,91 +108,80 @@ export default function OurStoryPage({ onNavigate }) {
         </div>
 
         <div className="story-pillars-grid">
-          
+
           <div className="pillar-card">
             <div className="pillar-num">01</div>
-            <h3 className="pillar-title">100% Organic Soy Wax</h3>
+            <h3 className="pillar-title">100% Soy Wax</h3>
             <p className="pillar-desc">
-              Grown sustainably from renewable botanical sources. Biodegradable, clean-burning, and entirely free of petroleum, paraffin, pesticides, and GMOs.
+              A renewable, plant-based alternative that burns cleaner and longer than traditional paraffin.
             </p>
           </div>
 
           <div className="pillar-card">
             <div className="pillar-num">02</div>
-            <h3 className="pillar-title">Unbleached Cotton Wicks</h3>
+            <h3 className="pillar-title">Pure Cotton Wicks</h3>
             <p className="pillar-desc">
-              Custom-braided pure cotton and paper wicks without lead or zinc cores. Ensures a steady, calm flame with zero toxic soot.
+              Ensures a steady, non-toxic burn with zero synthetic soot or harmful residue.
             </p>
           </div>
 
           <div className="pillar-card">
             <div className="pillar-num">03</div>
-            <h3 className="pillar-title">Clean Botanical Fragrance</h3>
+            <h3 className="pillar-title">Premium Essential Oils</h3>
             <p className="pillar-desc">
-              Masterfully compounded with natural essential oils and safe aroma isolates. Certified 100% free of parabens, phthalates, and toxins.
+              An authentic olfactory experience, free from synthetic additives and harmful parabens.
             </p>
           </div>
 
           <div className="pillar-card">
             <div className="pillar-num">04</div>
-            <h3 className="pillar-title">Heirloom Reusable Vessels</h3>
+            <h3 className="pillar-title">Conscious Packaging</h3>
             <p className="pillar-desc">
-              Heavyweight hand-blown glass, ceramics, and brass designed to be permanently kept, refilled at our atelier, or repurposed as decor.
+              Thoughtfully designed to protect every product while minimizing environmental footprint.
             </p>
           </div>
 
         </div>
       </section>
 
-      {/* Interactive Heritage Timeline */}
-      <section className="section story-timeline-section">
-        <div className="section-intro">
-          <span className="section-eyebrow">The Journey</span>
-          <h2 className="section-title">Heritage Milestones</h2>
-        </div>
-
-        <div className="timeline-track">
-          {milestones.map((m, idx) => (
-            <div className={`timeline-item ${idx % 2 === 0 ? 'left' : 'right'}`} key={m.year}>
-              <div className="timeline-dot">
-                <span>{m.year}</span>
-              </div>
-              <div className="timeline-content">
-                <span className="timeline-year-tag">{m.year}</span>
-                <h3 className="timeline-heading">{m.title}</h3>
-                <p className="timeline-text">{m.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Atelier Workshop Gallery */}
+      {/* Gallery */}
       <section className="section story-gallery-section">
         <div className="section-intro">
           <span className="section-eyebrow">Behind the Scenes</span>
-          <h2 className="section-title">The Atelier Workshop</h2>
+          <h2 className="section-title">Crafted with Intention</h2>
         </div>
 
         <div className="story-gallery-grid">
           <div className="gallery-item large">
-            <img src={foundersImg} alt="Master Chandler Pouring Soy Wax" />
-            <div className="gallery-caption">Hand-Pouring at 135°F</div>
+            <img
+              src={galleryImgs[0]}
+              alt="Hand-Poured Soy Wax Candle"
+              onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+            />
+            <div className="gallery-caption">100% Soy Wax, Hand-Poured</div>
           </div>
           <div className="gallery-item">
-            <img src={wellnessImg} alt="Botanical Oils and Lavender Buds" />
-            <div className="gallery-caption">Natural Botanical Extracts</div>
+            <img
+              src={galleryImgs[1]}
+              alt="Pure Botanical Fragrance"
+              onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+            />
+            <div className="gallery-caption">Pure Botanical Fragrance</div>
           </div>
           <div className="gallery-item">
-            <img src={boutiqueImg} alt="Finished Heirloom Vessels" />
-            <div className="gallery-caption">Hand-Inspected & Cured</div>
+            <img
+              src={galleryImgs[2]}
+              alt="Finished Heirloom Vessels"
+              onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+            />
+            <div className="gallery-caption">Thoughtfully Packaged</div>
           </div>
         </div>
 
         <div className="story-cta-box">
           <h3>Experience the Craft in Your Home</h3>
-          <p>Explore our signature candle collections poured with over 20 years of dedication.</p>
-          <button 
+          <p>Explore our full collection of hand-poured, eco-conscious soy candles.</p>
+          <button
             className="btn-luxury-cta"
             onClick={() => onNavigate && onNavigate('shop')}
           >

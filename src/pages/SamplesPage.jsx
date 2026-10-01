@@ -1,28 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Sparkles, Check, Plus, Trash2, ShoppingBag, Gift, ArrowRight } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
-import wellnessImg from '../assets/wellness_collection.png';
-import foundersImg from '../assets/founders_collection.png';
+import { useProducts } from '../hooks/useProducts';
+
+const SAMPLE_COLLECTIONS = ['Christmas Festive Lights', 'Tealights', 'Molded Candles'];
+const FRAGRANCE_TABS = ['Vanilla', 'Lavender', 'Citrus', 'Lemongrass', 'Sweet Dreams'];
+const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 export default function SamplesPage({ onAddToCart, onNavigate }) {
+  const { products, loading } = useProducts();
+
+  const sampleEligible = useMemo(
+    () => products.filter((p) => SAMPLE_COLLECTIONS.includes(p.collection)),
+    [products]
+  );
   const [boxSize, setBoxSize] = useState(4); // 4 or 6
-  const [selectedScents, setSelectedScents] = useState([
-    PRODUCTS[0], // Forest Ave
-    PRODUCTS[1], // Perloat
-    PRODUCTS[2], // Heritage
-    PRODUCTS[7]  // Laguna Breeze
-  ]);
+  const [selectedScents, setSelectedScents] = useState([]);
+  const [activeFragrance, setActiveFragrance] = useState(FRAGRANCE_TABS[0]);
   const [addedToast, setAddedToast] = useState(false);
+   
+   const fragranceFiltered = useMemo(
+  () =>
+    sampleEligible.filter((p) => {
+      const text = `${p.title} ${p.description}`.toLowerCase();
+      return text.includes(activeFragrance.toLowerCase());
+    }),
+  [sampleEligible, activeFragrance]
+);
+
+  // Once real products load, default-select the first 4
+  React.useEffect(() => {
+    if (sampleEligible.length > 0 && selectedScents.length === 0) {
+      setSelectedScents(sampleEligible.slice(0, 4));
+    }
+  }, [sampleEligible]);
 
   const boxPrice = boxSize === 4 ? 899.00 : 1299.00;
   const voucherAmount = 500.00;
 
   const handleSelectScent = (product) => {
     if (selectedScents.some(s => s.id === product.id)) {
-      // Already selected -> remove
       setSelectedScents(selectedScents.filter(s => s.id !== product.id));
     } else {
-      // Add if under capacity
       if (selectedScents.length < boxSize) {
         setSelectedScents([...selectedScents, product]);
       }
@@ -40,7 +58,7 @@ export default function SamplesPage({ onAddToCart, onNavigate }) {
       id: `discovery-box-${Date.now()}`,
       title: `Discovery Scent Flight (${boxSize} Samplers)`,
       price: boxPrice,
-      image: wellnessImg,
+      image: selectedScents[0]?.image || PLACEHOLDER_IMAGE,
       quantity: 1,
       description: `Custom box with: ${selectedScents.map(s => s.title).join(', ')} + ₹500 Full Size Voucher`
     };
@@ -51,10 +69,11 @@ export default function SamplesPage({ onAddToCart, onNavigate }) {
 
   const isBoxFull = selectedScents.length === boxSize;
 
+  if (loading) return null;
+
   return (
     <div className="samples-page">
-      
-      {/* Hero Header */}
+
       <section className="samples-hero">
         <div className="samples-hero-overlay" />
         <div className="samples-hero-content">
@@ -72,17 +91,15 @@ export default function SamplesPage({ onAddToCart, onNavigate }) {
         </div>
       </section>
 
-      {/* Main Interactive Builder Section */}
       <div className="samples-builder-container">
-        
-        {/* Step 1: Choose Box Size */}
+
         <div className="builder-step-header">
           <span className="step-tag">Step 1</span>
           <h2 className="step-heading">Choose Your Discovery Flight Size</h2>
         </div>
 
         <div className="box-size-selector-row">
-          <div 
+          <div
             className={`box-size-card ${boxSize === 4 ? 'active' : ''}`}
             onClick={() => {
               setBoxSize(4);
@@ -100,7 +117,7 @@ export default function SamplesPage({ onAddToCart, onNavigate }) {
             <span className="box-size-price">₹899</span>
           </div>
 
-          <div 
+          <div
             className={`box-size-card ${boxSize === 6 ? 'active' : ''}`}
             onClick={() => setBoxSize(6)}
           >
@@ -116,7 +133,6 @@ export default function SamplesPage({ onAddToCart, onNavigate }) {
           </div>
         </div>
 
-        {/* Step 2: Interactive Box Tray Showcase */}
         <div className="builder-step-header" style={{ marginTop: '40px' }}>
           <span className="step-tag">Step 2</span>
           <h2 className="step-heading">Your Presentation Keepsake Box ({selectedScents.length}/{boxSize} Selected)</h2>
@@ -130,16 +146,21 @@ export default function SamplesPage({ onAddToCart, onNavigate }) {
                 <div className={`tray-slot ${scent ? 'filled' : 'empty'}`} key={idx}>
                   {scent ? (
                     <div className="slot-content">
-                      <button 
-                        className="slot-remove-btn" 
+                      <button
+                        className="slot-remove-btn"
                         onClick={() => handleRemoveSlot(idx)}
                         aria-label="Remove scent"
                       >
                         <Trash2 size={12} />
                       </button>
-                      <img src={scent.image} alt={scent.title} className="slot-img" />
+                      <img
+                        src={scent.image || PLACEHOLDER_IMAGE}
+                        alt={scent.title}
+                        className="slot-img"
+                        onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+                      />
                       <span className="slot-title">{scent.title}</span>
-                      <span className="slot-vibe">{scent.scentFamily}</span>
+                      <span className="slot-vibe">{scent.collection}</span>
                     </div>
                   ) : (
                     <div className="slot-placeholder">
@@ -159,7 +180,7 @@ export default function SamplesPage({ onAddToCart, onNavigate }) {
               <span className="tray-credit-note">(Your effective cost after ₹500 candle voucher: ₹{(boxPrice - 500).toLocaleString('en-IN')})</span>
             </div>
 
-            <button 
+            <button
               className={`btn-luxury-cta ${!isBoxFull ? 'disabled' : ''}`}
               disabled={!isBoxFull}
               onClick={handleAddBoxToCart}
@@ -177,35 +198,54 @@ export default function SamplesPage({ onAddToCart, onNavigate }) {
           )}
         </div>
 
-        {/* Step 3: Scent Selection Grid */}
-        <div className="builder-step-header" style={{ marginTop: '50px' }}>
+                <div className="builder-step-header" style={{ marginTop: '50px' }}>
           <span className="step-tag">Step 3</span>
           <h2 className="step-heading">Click Any Scent Below to Add or Swap</h2>
-          <p className="step-subtext">Choose your favorite fragrance families to test in your home.</p>
+          <p className="step-subtext">Browse by your favorite fragrance essential oil.</p>
+        </div>
+
+        <div className="fragrance-tabs-row">
+          {FRAGRANCE_TABS.map((f) => (
+            <button
+              key={f}
+              className={`fragrance-tab-btn ${activeFragrance === f ? 'active' : ''}`}
+              onClick={() => setActiveFragrance(f)}
+            >
+              {f}
+            </button>
+          ))}
         </div>
 
         <div className="scents-picker-grid">
-          {PRODUCTS.filter(p => p.category !== 'Accessories').map((product) => {
-            const isSelected = selectedScents.some(s => s.id === product.id);
-            return (
-              <div 
-                key={product.id}
-                className={`scent-pick-card ${isSelected ? 'selected' : ''}`}
-                onClick={() => handleSelectScent(product)}
-              >
-                <div className="pick-checkbox">
-                  {isSelected ? <Check size={14} color="#FFF" /> : null}
+          {fragranceFiltered.length === 0 ? (
+            <p className="no-scent-match">No candles found for "{activeFragrance}" yet — try another fragrance.</p>
+          ) : (
+            fragranceFiltered.map((product) => {
+              const isSelected = selectedScents.some(s => s.id === product.id);
+              return (
+                <div
+                  key={product.id}
+                  className={`scent-pick-card ${isSelected ? 'selected' : ''}`}
+                  onClick={() => handleSelectScent(product)}
+                >
+                  <div className="pick-checkbox">
+                    {isSelected ? <Check size={14} color="#FFF" /> : null}
+                  </div>
+                  <img
+                    src={product.image || PLACEHOLDER_IMAGE}
+                    alt={product.title}
+                    className="pick-img"
+                    onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+                  />
+                  <div className="pick-info">
+                    <span className="pick-category">{product.collection || product.category}</span>
+                    <h4 className="pick-title">{product.title}</h4>
+                    <p className="pick-desc">{(product.description || '').slice(0, 90)}{product.description?.length > 90 ? '…' : ''}</p>
+                  </div>
                 </div>
-                <img src={product.image} alt={product.title} className="pick-img" />
-                <div className="pick-info">
-                  <span className="pick-category">{product.collection || product.category}</span>
-                  <h4 className="pick-title">{product.title}</h4>
-                  <span className="pick-scent-notes">{product.scentFamily}</span>
-                  <p className="pick-desc">{product.tagline}</p>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
 
       </div>

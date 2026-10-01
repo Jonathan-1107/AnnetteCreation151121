@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, User, ShoppingBag, Heart, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { useCatalogNav } from '../hooks/useCatalogNav';
 
 export default function Header({ 
   cartCount = 0, 
@@ -7,12 +8,14 @@ export default function Header({
   onCartOpen, 
   onSearchOpen,
   currentPage = 'home',
-  onNavigate 
+  onNavigate,
+  user = null
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileExpandedDropdown, setMobileExpandedDropdown] = useState(null);
   const [mobileExpandedNested, setMobileExpandedNested] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { navDepartments } = useCatalogNav();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,85 +25,22 @@ export default function Header({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { 
-      name: 'Candles', 
-      page: 'shop',
-      category: 'All Candles',
-      dropdown: [
-        { 
-          name: 'Christmas Festive Lights', 
-          page: 'shop', 
-          category: 'Christmas Festive Lights',
-          children: [
-            { name: 'Christmas Advent', page: 'shop', category: 'Christmas Advent' },
-            { name: 'Themed Christmas Tin ', page: 'shop', category: 'Christmas Tin' },
-            { name: 'Christmas Tree Shape Mold', page: 'shop', category: 'Christmas Tree Shaped Mold' }
-          ]
-        },
-        { 
-          name: 'Tealights', 
-          page: 'shop', 
-          category: 'Tealights',
-          children: [
-            { name: 'Rose', page: 'shop', category: 'Rose Tealight' },
-            { name: 'Small Shaped', page: 'shop', category: 'Shaped Tealight' }
-          ]
-        },
-        { 
-          name: 'Handcrafted Fragrance Candles', 
-          page: 'shop', 
-          category: 'Handcrafted Fragrance Candles',
-          children: [
-            { name: 'Matkas, Terracotta Diyas & Clay Handicraft', page: 'shop', category: 'Clay Handicraft' },
-            { name: 'Lotus Ceramic', page: 'shop', category: 'Lotus Ceramic' }
-          ]
-        },
-        { 
-          name: 'Molded Candles', 
-          page: 'shop', 
-          category: 'Molded Candles',
-          children: [
-            { name: 'Pillar Candles (Love Embossed, Plain, Zig-Zag, Diamond, Marble)', page: 'shop', category: 'Pillar Candles' },
-            { name: 'Gothic Krafted (Artisan Regal, Red Line Pattern)', page: 'shop', category: 'Gothic Krafted' },
-            { name: 'Floral Design (Rose, Christmas Tree, Daisy)', page: 'shop', category: 'Floral Design' },
-            { name: 'Striped Candles (Rectangular, Circular)', page: 'shop', category: 'Striped Candles' }
-          ]
-        },
-        { 
-          name: 'Holistic Candles', 
-          page: 'shop', 
-          category: 'Holistic Candles',
-          children: [
-            { name: 'Long Embroidered Candles', page: 'shop', category: 'Long Embroidered Candles' }
-          ]
-        }
-      ]
-    },
-    { 
-      name: 'Fragrance Glass Bottles', 
-      page: 'shop', 
-      category: 'Fragrance Glass Bottles',
-      dropdown: [
-        { name: 'Glass Jars (Green, Red, Gold Interior)', page: 'shop', category: 'Glass Jars Gold Interior' },
-        { name: 'Brown (Matte, Clear)', page: 'shop', category: 'Brown Glass' },
-        { name: 'White Glass', page: 'shop', category: 'White Glasses' },
-        { name: 'Clear Glass', page: 'shop', category: 'Clear Glasses' }
-      ]
-    },
-    { 
-  name: 'Events & Gifting', 
-  page: 'events',
-  dropdown: [
-    { name: 'Corporate Workshops', page: 'events', tab: 'corporate' },
-    { name: 'Corporate Gifting Concierge', page: 'events', tab: 'gifting' },
-    { name: 'Candle Workshops', page: 'events', tab: 'private' }
-  ]
-},
+  // Department-level nav items (Candles, Fragrance Glass Bottles) built live from Supabase
+  const dynamicNavLinks = navDepartments.map((dept) => ({
+    name: dept.name,
+    page: 'shop',
+    category: null, // top-level department link shows all products
+    dropdown: dept.dropdown
+  }));
+
+    const staticNavLinks = [
+    { name: 'Corporate Events', page: 'events' },
     { name: 'Sample Fragrances', page: 'samples' },
-    { name: 'Festive Collections', page: 'shop', category: 'Festive' },
+    { name: 'Festive Collections', page: 'shop', category: 'Christmas Festive Lights' },
     { name: 'Our Story', page: 'story' }
   ];
+
+  const navLinks = [...dynamicNavLinks, ...staticNavLinks];
 
   const handleNavClick = (page, category = null, tab = null) => {
     if (onNavigate) {
@@ -119,7 +59,13 @@ export default function Header({
   const toggleMobileNested = (name) => {
     setMobileExpandedNested((prev) => (prev === name ? null : name));
   };
-
+  const handleAccountClick = () => {
+    if (user) {
+      handleNavClick('account');
+    } else {
+      handleNavClick('login');
+    }
+  };
   return (
     <header className={`main-header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="header-container">
@@ -184,7 +130,7 @@ export default function Header({
                         {nav.dropdown.map((sub) => (
                           <li 
                             key={sub.name} 
-                            className={`dropdown-item ${sub.children ? 'has-nested' : ''}`}
+                            className={`dropdown-item ${sub.children && sub.children.length ? 'has-nested' : ''}`}
                           >
                             <button 
                               className="dropdown-link"
@@ -194,14 +140,14 @@ export default function Header({
                               }}
                             >
                               <span className="dropdown-link-text">{sub.name}</span>
-                              {sub.children ? (
+                              {sub.children && sub.children.length ? (
                                 <ChevronRight size={14} className="nested-chevron" />
                               ) : sub.badge ? (
                                 <span className="dropdown-link-badge">{sub.badge}</span>
                               ) : null}
                             </button>
 
-                            {sub.children && (
+                            {sub.children && sub.children.length > 0 && (
                               <ul className="nav-nested-dropdown">
                                 {sub.children.map((child) => (
                                   <li key={child.name} className="dropdown-item">
@@ -254,9 +200,9 @@ export default function Header({
 
             <button 
               className="icon-btn" 
-              onClick={() => handleNavClick('account')} 
-              aria-label="Customer account portal"
-              title="My Account"
+              onClick={handleAccountClick} 
+              aria-label={user ? 'My Account' : 'Sign in'}
+              title={user ? 'My Account' : 'Sign in'}
             >
               <User size={19} strokeWidth={1.5} />
             </button>
@@ -352,7 +298,7 @@ export default function Header({
                                 <button 
                                   className="mobile-sublink"
                                   onClick={() => {
-                                    if (sub.children) {
+                                    if (sub.children && sub.children.length) {
                                       toggleMobileNested(sub.name);
                                     } else {
                                       handleNavClick(sub.page, sub.category, sub.tab);
@@ -361,7 +307,7 @@ export default function Header({
                                 >
                                   <span>{sub.name}</span>
                                 </button>
-                                {sub.children && (
+                                {sub.children && sub.children.length > 0 && (
                                   <button
                                     className="mobile-expand-btn"
                                     onClick={() => toggleMobileNested(sub.name)}
@@ -378,7 +324,7 @@ export default function Header({
                                 )}
                               </div>
 
-                              {sub.children && isNestedOpen && (
+                              {sub.children && sub.children.length > 0 && isNestedOpen && (
                                 <ul className="mobile-nested-submenu">
                                   {sub.children.map((child) => (
                                     <li key={child.name} className="mobile-subitem">
@@ -411,7 +357,7 @@ export default function Header({
               </button>
               
               <div className="mobile-footer-links">
-                <button onClick={() => handleNavClick('account')}>My Account</button>
+                <button onClick={handleAccountClick}>{user ? 'My Account' : 'Sign In'}</button>
                 <span>&bull;</span>
                 <button onClick={() => handleNavClick('contact')}>Help & FAQ</button>
               </div>

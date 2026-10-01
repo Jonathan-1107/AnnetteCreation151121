@@ -1,8 +1,38 @@
-import React from 'react';
-import foundersImg from '../assets/founders_collection.png';
-import wellnessImg from '../assets/wellness_collection.png';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
+
+const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 export default function BrandStories({ onNavigate }) {
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    async function fetchImages() {
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          image_url,
+          categories ( collections ( name ) )
+        `)
+        .not('image_url', 'is', null);
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      const matches = data
+        .filter((p) => p.categories?.collections?.name === 'Fragrance Glass Bottles')
+        .map((p) => p.image_url);
+
+      setImages(matches);
+    }
+    fetchImages();
+  }, []);
+
+  const img1 = images[0] || PLACEHOLDER_IMAGE;
+  const img2 = images[1] || images[0] || PLACEHOLDER_IMAGE;
+
   return (
     <section className="section brand-stories-section" id="story">
       <div className="section-intro">
@@ -11,11 +41,16 @@ export default function BrandStories({ onNavigate }) {
       </div>
 
       <div className="stories-grid">
-        
+
         {/* 13. Craftsmanship */}
         <div className="story-card">
           <div className="story-img-wrap">
-            <img src={foundersImg} alt="Small-Batch Artisan Craftsmanship" className="story-img" />
+            <img
+              src={img1}
+              alt="Small-Batch Artisan Craftsmanship"
+              className="story-img"
+              onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+            />
             <span className="story-badge">Artisan Poured</span>
           </div>
           <div className="story-content">
@@ -24,8 +59,8 @@ export default function BrandStories({ onNavigate }) {
             <p className="story-body">
               Every single Annette Pure candle is hand-poured in micro-batches of twelve. We meticulously monitor pour temperatures, hand-set each braided cotton wick, and allow every candle to cure naturally for two weeks before packaging.
             </p>
-            <button 
-              className="btn-luxe" 
+            <button
+              className="btn-luxe"
               onClick={() => onNavigate && onNavigate('story')}
             >
               Read Our Story &rarr;
@@ -36,7 +71,12 @@ export default function BrandStories({ onNavigate }) {
         {/* 14. Philosophy */}
         <div className="story-card">
           <div className="story-img-wrap">
-            <img src={wellnessImg} alt="The Art of Mindful Ambiance" className="story-img" />
+            <img
+              src={img2}
+              alt="The Art of Mindful Ambiance"
+              className="story-img"
+              onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+            />
             <span className="story-badge">Botanical Science</span>
           </div>
           <div className="story-content">
@@ -45,9 +85,9 @@ export default function BrandStories({ onNavigate }) {
             <p className="story-body">
               We reject cheap paraffin fillers, synthetic dyes, and harsh chemical stabilizers. Our clean promise guarantees 100% biodegradable natural botanical soy wax, lead-free cotton wicks, and pure essential oil fragrance blends.
             </p>
-            <button 
+            <button
               className="btn-luxe"
-              onClick={() => onNavigate && onNavigate('shop', { category: 'Wellness' })}
+              onClick={() => onNavigate && onNavigate('shop', { category: 'Fragrance Glass Bottles' })}
             >
               Shop Clean Scents &rarr;
             </button>

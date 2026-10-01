@@ -3,6 +3,7 @@ import {
   ShieldCheck, Lock, CreditCard, Truck, Gift, ArrowRight, ArrowLeft, 
   ShoppingBag, Sparkles, CheckCircle, Smartphone, Building2, Banknote 
 } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 
 const INDIAN_STATES = [
   "Andhra Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh", "Delhi",
@@ -17,7 +18,8 @@ export default function CheckoutPage({
   onNavigate,
   appliedDiscount = 0,
   initialGiftMessage = '',
-  onAddOrder 
+  onAddOrder,
+  user 
 }) {
   const [currentStep, setCurrentStep] = useState(1); // 1: Address, 2: Shipping, 3: Payment, 4: Confirmation
   
@@ -52,6 +54,10 @@ export default function CheckoutPage({
   const [giftNote, setGiftNote] = useState(initialGiftMessage || '');
   const [confirmedOrder, setConfirmedOrder] = useState(null);
 
+  // Order placement state
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const [orderError, setOrderError] = useState('');
+
   // Totals calculations
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const isFreeStandard = subtotal >= 1499;
@@ -64,27 +70,192 @@ export default function CheckoutPage({
   const discountAmount = (subtotal * discountPercent) / 100;
   const grandTotal = Math.max(0, subtotal - discountAmount + shippingCost);
 
-  const handleApplyPromo = (e) => {
+   const [appliedCouponId, setAppliedCouponId] = useState(null);
+
+  const handleApplyPromo = async (e) => {
     e.preventDefault();
     const clean = promoCode.trim().toUpperCase();
-    if (clean === 'WELCOME10') {
-      setDiscountPercent(10);
-      setPromoMessage('10% Welcome Discount Applied!');
-    } else if (clean === 'LUXURY20') {
-      setDiscountPercent(20);
-      setPromoMessage('20% VIP Vault Discount Applied!');
-    } else if (clean === 'FREESHIP') {
+
+    const { data: coupon, error } = await supabase
+      .from('coupons')
+      .select('*')
+      .eq('code', clean)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (error || !coupon) {
+      setPromoMessage('Invalid or expired coupon code.');
+      setDiscountPercent(0);
+      setAppliedCouponId(null);
+      return;
+    }
+
+    if (coupon.expiry_date && new Date(coupon.expiry_date) < new Date()) {
+      setPromoMessage('This coupon has expired.');
+      setDiscountPercent(0);
+      setAppliedCouponId(null);
+      return;
+    }
+
+    if (coupon.usage_limit && coupon.times_used >= coupon.usage_limit) {
+      setPromoMessage('This coupon has reached its usage limit.');
+      setDiscountPercent(0);
+      setAppliedCouponId(null);
+      return;
+    }
+
+    if (coupon.discount_type === 'percent') {
+      setDiscountPercent(coupon.discount_value);
+      setPromoMessage(`${coupon.discount_value}% discount applied!`);
+    } else {
+      // fixed-type coupons here are used for perks like free shipping (discount_value = 0)
       setDiscountPercent(0);
       setShippingMethod('standard');
-      setPromoMessage('Complimentary Pan-India Shipping Activated!');
-    } else {
-      setPromoMessage('Invalid coupon code. Try WELCOME10 or LUXURY20');
+      setPromoMessage('Free shipping activated!');
     }
+    setAppliedCouponId(coupon.id);
   };
+  const initiateRazorpayPayment = async () => {
+    setOrderError('');
 
-  const handlePlaceOrder = (e) => {
+    if (!user) {
+      setOrderError('Please sign in to complete your order.');
+      return null;
+    }
+
+    setPlacingOrder(true);
+
+    // Call the Edge Function to create a Razorpay order
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+
+    const res = await fetch(
+      `https://wkanwszulyoymgkimkwk.supabase.co/functions/v1/create-razorpay-order`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({ amount: grandTotal })
+      }
+    );
+
+    const razorpayOrder = await res.json();
+
+    if (!res.ok || razorpayOrder.error) {
+      console.error(razorpayOrder.error);
+      setOrderError('Could not start payment. Please try again.');
+      setPlacingOrder(false);
+      return null;
+    }
+
+    return new Promise((resolve) => {
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        name: 'Annette Pure',
+        description: 'Handmade Soy Candles Order',
+        order_id: razorpayOrder.id,
+        prefill: {
+          name: fullName,
+          email: email,
+          contact: phone
+        },
+        theme: { color: '#2D2A26' },
+        handler: function (response) {
+          resolve(response); // { razorpay_payment_id, razorpay_order_id, razorpay_signature }
+        },
+        modal: {
+          ondismiss: function () {
+            setPlacingOrder(false);
+            resolve(null);
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    });
+  };
+    const handlePlaceOrder = async (e) => {
     e.preventDefault();
+
+    const paymentResult = await initiateRazorpayPayment();
+    if (!paymentResult) {
+      // Payment popup was closed or failed — stop here, don't save an order
+      return;
+    }
+
     const orderNumber = `AP-IN-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    const shippingMethodTitle = shippingMethod === 'standard'
+      ? 'Standard Pan-India Delivery (2-4 Days)'
+      : (shippingMethod === 'express' ? 'Express Priority Air (1-2 Days)' : 'White-Glove Keepsake Box & Wax Seal');
+
+    const paymentMethodTitle = paymentTab === 'upi'
+      ? `UPI (${upiId})`
+      : (paymentTab === 'card' ? 'Credit / Debit Card (RuPay/Visa/MasterCard)' : (paymentTab === 'netbanking' ? `NetBanking (${selectedBank})` : 'Cash on Delivery'));
+
+    // 1. Insert the order
+    const { data: orderRow, error: orderInsertError } = await supabase
+      .from('orders')
+        .insert({
+        user_id: user.id,
+        order_number: orderNumber,
+        status: 'paid',
+        razorpay_payment_id: paymentResult.razorpay_payment_id,
+        razorpay_order_id: paymentResult.razorpay_order_id,
+        subtotal,
+        discount_amount: discountAmount,
+        shipping_cost: shippingCost,
+        total: grandTotal,
+        shipping_name: fullName,
+        shipping_phone: phone,
+        shipping_address: `${address} ${apt}`.trim(),
+        shipping_city: city,
+        shipping_state: state,
+        shipping_zip: zip,
+        shipping_country: country,
+        shipping_method: shippingMethodTitle,
+        payment_method: paymentMethodTitle,
+        gift_note: giftNote
+      })
+      .select()
+      .single();
+
+    if (orderInsertError) {
+      console.error(orderInsertError);
+      setOrderError('Something went wrong placing your order. Please try again.');
+      setPlacingOrder(false);
+      return;
+    }
+
+    // 2. Insert order items
+    const itemRows = cartItems.map((item) => ({
+      order_id: orderRow.id,
+      product_id: item.id,
+      product_title: item.title,
+      sku: item.sku || null,
+      quantity: item.quantity,
+      price_at_purchase: item.price
+    }));
+
+    const { error: itemsError } = await supabase.from('order_items').insert(itemRows);
+
+    if (itemsError) {
+      console.error(itemsError);
+      setOrderError('Order saved, but there was an issue saving items. Please contact support.');
+      setPlacingOrder(false);
+      return;
+    }
+      // Increment coupon usage if one was applied
+    if (appliedCouponId) {
+      await supabase.rpc('increment_coupon_usage', { coupon_id: appliedCouponId });
+    }
+
+    // 3. Build local confirmation object (same shape as before, for the receipt UI)
     const newOrder = {
       orderNumber,
       date: new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
@@ -95,32 +266,21 @@ export default function CheckoutPage({
       shippingCost,
       tax: 0,
       total: grandTotal,
-      shippingAddress: {
-        name: fullName,
-        phone,
-        address: `${address} ${apt}`.trim(),
-        city,
-        state,
-        zip,
-        country
-      },
-      shippingMethodTitle: shippingMethod === 'standard' ? 'Standard Pan-India Delivery (2-4 Days)' : (shippingMethod === 'express' ? 'Express Priority Air (1-2 Days)' : 'White-Glove Keepsake Box & Wax Seal'),
-      paymentMethodTitle: paymentTab === 'upi' ? `UPI (${upiId})` : (paymentTab === 'card' ? 'Credit / Debit Card (RuPay/Visa/MasterCard)' : (paymentTab === 'netbanking' ? `NetBanking (${selectedBank})` : 'Cash on Delivery')),
+      shippingAddress: { name: fullName, phone, address: `${address} ${apt}`.trim(), city, state, zip, country },
+      shippingMethodTitle,
+      paymentMethodTitle,
       giftNote,
       estimatedDelivery: shippingMethod === 'express' ? '1 - 2 Business Days' : '2 - 4 Business Days'
     };
 
     setConfirmedOrder(newOrder);
-    if (onAddOrder) {
-      onAddOrder(newOrder);
-    }
-    if (onClearCart) {
-      onClearCart();
-    }
+    if (onAddOrder) onAddOrder(newOrder);
+    if (onClearCart) onClearCart();
+    setPlacingOrder(false);
     setCurrentStep(4);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
+    
   if (cartItems.length === 0 && currentStep !== 4) {
     return (
       <div className="checkout-empty-page">
@@ -139,7 +299,7 @@ export default function CheckoutPage({
   if (currentStep === 4 && confirmedOrder) {
     return (
       <div className="order-confirmation-page">
-        <div className="confirmation-container">
+        <div className="confirmation-container" style={{ paddingTop: '120px' }}>
           <div className="confirmation-header-card">
             <div className="confirm-icon-wrap">
               <CheckCircle size={44} className="confirm-icon" />
@@ -162,15 +322,21 @@ export default function CheckoutPage({
 
             <div className="receipt-items-list">
               {confirmedOrder.items.map((it, idx) => (
-                <div className="receipt-item-row" key={idx}>
-                  <img src={it.image} alt={it.title} className="receipt-item-thumb" />
-                  <div className="receipt-item-meta">
-                    <h4>{it.title}</h4>
-                    <span>Qty: {it.quantity} &bull; 100% Organic Soy</span>
-                  </div>
-                  <span className="receipt-item-price">₹{(it.price * it.quantity).toLocaleString('en-IN')}</span>
-                </div>
-              ))}
+  <div className="receipt-item-row" key={idx} style={{ alignItems: 'center' }}>
+    <img
+      src={it.image}
+      alt={it.title}
+      className="receipt-item-thumb"
+      style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }}
+    />
+    <div className="receipt-item-meta">
+      <h4 style={{ margin: '0 0 4px 0' }}>{it.title}</h4>
+      {it.sku && <span style={{ display: 'block', fontSize: '0.75rem', color: '#8A8478' }}>SKU: {it.sku}</span>}
+      <span>Qty: {it.quantity} &bull; ₹{it.price.toLocaleString('en-IN')} each</span>
+    </div>
+    <span className="receipt-item-price">₹{(it.price * it.quantity).toLocaleString('en-IN')}</span>
+  </div>
+))}
             </div>
 
             <div className="receipt-totals-table">
@@ -391,7 +557,13 @@ export default function CheckoutPage({
               )}
               <div className="step-actions-row">
                 <button type="button" className="btn-luxury-outline" onClick={() => setCurrentStep(2)}><ArrowLeft size={16} /><span>Back to Shipping</span></button>
-                <button type="button" className="btn-luxury-cta place-order-btn" onClick={handlePlaceOrder}><Lock size={15} /><span>Complete Order &bull; ₹{Math.round(grandTotal).toLocaleString('en-IN')}</span></button>
+                <button type="button" className="btn-luxury-cta place-order-btn" onClick={handlePlaceOrder} disabled={placingOrder}>
+                  <Lock size={15} />
+                  <span>{placingOrder ? 'Placing Order...' : `Complete Order • ₹${Math.round(grandTotal).toLocaleString('en-IN')}`}</span>
+                </button>
+                {orderError && (
+                  <p style={{ color: '#B33A3A', fontSize: '0.85rem', marginTop: '8px' }}>{orderError}</p>
+                )}
               </div>
             </div>
           )}

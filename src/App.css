@@ -182,3 +182,123 @@
     border-right-color: var(--border);
   }
 }
+/* ===== Why Candles Work / Our Process shared grid tweaks ===== */
+.events-why-section .events-grid-3,
+.events-offerings-section .events-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 40px;
+}
+
+.events-grid-4 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 40px;
+}
+
+.event-process-step {
+  flex: 1 1 220px;
+  max-width: 260px;
+  position: relative;
+  background: #FFF9F0;
+  border: 1px solid #E8DFD0;
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.event-process-step:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(45, 42, 38, 0.08);
+}
+
+@media (max-width: 900px) {
+  .events-grid-4 {
+    flex-direction: column;
+    align-items: center;
+  }
+  .event-process-step {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+.event-process-num {
+  display: block;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: #B8925A;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.event-process-step .event-icon-circle {
+  margin: 0 auto 16px;
+}
+
+/* ===== Offering Card Images (Tailored to You) ===== */
+.event-card-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  display: block;
+}
+
+/* ===== Icon Circle (shared, in case not already styled) ===== */
+.event-icon-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #F5EFE6;
+  color: #B8925A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+/* ===== Emotional Close Section ===== */
+.events-emotional-close {
+  background: #2D2A26;
+  padding: 100px 24px;
+  text-align: center;
+}
+
+.events-emotional-content {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.events-emotional-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.4;
+  color: #F5EFE6;
+  font-weight: 400;
+  margin-bottom: 36px;
+}
+
+.events-emotional-close .btn-luxury-cta {
+  display: inline-block;
+}
+
+/* ===== Section spacing consistency ===== */
+.events-why-section,
+.events-process-section,
+.events-offerings-section {
+  padding: 80px 24px;
+}
+
+.events-why-section .section-intro,
+.events-process-section .section-intro,
+.events-offerings-section .section-intro {
+  text-align: center;
+  margin-bottom: 8px;
+}

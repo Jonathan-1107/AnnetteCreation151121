@@ -1,25 +1,31 @@
 import React, { useState } from 'react';
-import { Calendar, Users, Gift, Sparkles, Check, Send, Award, Clock } from 'lucide-react';
-import foundersImg from '../assets/founders_collection.png';
-import boutiqueImg from '../assets/boutique_collection.png';
-import privateLabelImg from '../assets/private_label_services.png';
+import { Users, Gift, Sparkles, Check, Send, Compass, Palette, Package, Truck } from 'lucide-react';
+import { useRandomProductImages } from '../hooks/useRandomProductImages';
 
-export default function EventsPage({ initialTab = 'corporate', onNavigate }) {
-  const [activeTab, setActiveTab] = useState(initialTab || 'corporate');
+const PLACEHOLDER_IMAGE = '/placeholder.svg';
+
+export default function EventsPage({ onNavigate }) {
   const [submitted, setSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
     name: '',
     company: '',
     email: '',
     phone: '',
-    eventType: 'Corporate Team Workshop',
+    eventType: 'Corporate Gifting',
     guestCount: '10 - 25 Guests',
     date: '',
-    location: 'Mumbai Flagship Atelier',
-    customLids: true,
-    budget: '₹50,000 - ₹1,50,000',
+    location: '',
+    budget: '',
     notes: ''
   });
+
+  // Pull 5 random product photos from Supabase for hero + gifting cards + highlight strip
+  const { randomImages } = useRandomProductImages(5);
+  const heroImage = randomImages[0] || PLACEHOLDER_IMAGE;
+  const cardImage1 = randomImages[1] || PLACEHOLDER_IMAGE;
+  const cardImage2 = randomImages[2] || PLACEHOLDER_IMAGE;
+  const cardImage3 = randomImages[3] || PLACEHOLDER_IMAGE;
+  const highlightImage = randomImages[4] || PLACEHOLDER_IMAGE;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -32,14 +38,14 @@ export default function EventsPage({ initialTab = 'corporate', onNavigate }) {
       {/* Hero Section */}
       <section 
         className="events-hero"
-        style={{ backgroundImage: `url(${foundersImg})` }}
+        style={{ backgroundImage: `url(${heroImage})` }}
       >
         <div className="events-hero-overlay" />
         <div className="events-hero-content">
-          <span className="events-eyebrow">Atelier Experiences & Custom Gifting</span>
-          <h1 className="events-title">Private Events & Candle Workshops</h1>
+          <span className="events-eyebrow">Corporate Events</span>
+          <h1 className="events-title">Not Just a Candle. An Impression That Lasts.</h1>
           <p className="events-tagline">
-            Gather your team, celebrate life's milestones, or delight VIP clients with bespoke hands-on candle-making workshops and luxury gifting concierge.
+            Gather your team, delight your clients, and celebrate milestones with hand-poured soy candles crafted for every corporate occasion.
           </p>
           <a href="#event-booking" className="btn-luxury-cta">
             Inquire About Your Event &rarr;
@@ -47,74 +53,144 @@ export default function EventsPage({ initialTab = 'corporate', onNavigate }) {
         </div>
       </section>
 
-      {/* Services Tabs / Category Cards */}
+      {/* Why Candles Work */}
+      <section className="section events-why-section">
+        <div className="section-intro">
+          <span className="section-eyebrow">Why Candles Work</span>
+          <h2 className="section-title">The Gift Everyone Remembers</h2>
+        </div>
+
+        <div className="events-grid-3">
+          <div className="event-offering-card">
+            <div className="event-icon-circle">
+              <Sparkles size={24} />
+            </div>
+            <h3 className="event-card-title">Scent Creates Memory</h3>
+            <p className="event-card-desc">
+              The fragrance of a hand-poured soy candle lingers long after it's opened, keeping your brand and your gesture top of mind.
+            </p>
+          </div>
+
+          <div className="event-offering-card">
+            <div className="event-icon-circle">
+              <Gift size={24} />
+            </div>
+            <h3 className="event-card-title">Universally Loved</h3>
+            <p className="event-card-desc">
+              Elegant, thoughtful, and never one-size-fits-all — a candle suits every recipient, from clients to colleagues.
+            </p>
+          </div>
+
+          <div className="event-offering-card">
+            <div className="event-icon-circle">
+              <Users size={24} />
+            </div>
+            <h3 className="event-card-title">Sustainable Luxury</h3>
+            <p className="event-card-desc">
+              Hand-poured in small batches with 100% organic soy wax and non-toxic ingredients — premium that's also responsible.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Process */}
+      <section className="section events-process-section">
+        <div className="section-intro">
+          <span className="section-eyebrow">Our Process</span>
+          <h2 className="section-title">From Idea to Gift in Four Steps</h2>
+        </div>
+
+        <div className="events-grid-4">
+          <div className="event-process-step">
+            <span className="event-process-num">01</span>
+            <div className="event-icon-circle"><Compass size={22} /></div>
+            <h3 className="event-card-title">Vision</h3>
+            <p className="event-card-desc">Share your goals, audience, and occasion with our events concierge.</p>
+          </div>
+          <div className="event-process-step">
+            <span className="event-process-num">02</span>
+            <div className="event-icon-circle"><Palette size={22} /></div>
+            <h3 className="event-card-title">Design</h3>
+            <p className="event-card-desc">Choose a fragrance and vessel, or let our chandlers create something new.</p>
+          </div>
+          <div className="event-process-step">
+            <span className="event-process-num">03</span>
+            <div className="event-icon-circle"><Package size={22} /></div>
+            <h3 className="event-card-title">Packaging</h3>
+            <p className="event-card-desc">Select custom labels, boxes, and embossed finishes for your gifts.</p>
+          </div>
+          <div className="event-process-step">
+            <span className="event-process-num">04</span>
+            <div className="event-icon-circle"><Truck size={22} /></div>
+            <h3 className="event-card-title">Delivery</h3>
+            <p className="event-card-desc">Ready-to-gift, delivered pan-India on your schedule.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Tailored to You - Three Signature Formats */}
       <section className="section events-offerings-section" id="workshops">
         <div className="section-intro">
-          <span className="section-eyebrow">Our Three Signature Formats</span>
-          <h2 className="section-title">Experiences & Gifting</h2>
+          <span className="section-eyebrow">Tailored to You</span>
+          <h2 className="section-title">Our Three Signature Formats</h2>
         </div>
 
         <div className="events-grid-3">
           
-          {/* Card 1: Corporate Workshops */}
-          <div className={`event-offering-card ${activeTab === 'corporate' ? 'highlighted' : ''}`} onClick={() => setActiveTab('corporate')}>
-            <div className="event-icon-circle">
-              <Users size={24} />
-            </div>
+          <div className="event-offering-card">
+            <img
+              src={cardImage1}
+              alt="Corporate Scent Workshops"
+              className="event-card-img"
+              onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+            />
             <span className="event-card-tag">Team Building & Retreats</span>
             <h3 className="event-card-title">Corporate Scent Workshops</h3>
             <p className="event-card-desc">
-              Foster team creativity and wellness with a 2-hour guided fragrance formulation and pouring session led by our master chandlers.
+              A 2-hour guided fragrance formulation and hand-pouring session led by our master chandlers, hosted at our atelier or on-site.
             </p>
-            <ul className="event-perks-list">
-              <li>&bull; Each guest pours a custom 11 oz soy candle</li>
-              <li>&bull; Custom company branded labels & lids</li>
-              <li>&bull; Hosted at our Mumbai/Bengaluru atelier or on-site at your venue</li>
-            </ul>
           </div>
 
-          {/* Card 2: Corporate Gifting */}
-          <div className={`event-offering-card ${activeTab === 'gifting' ? 'highlighted' : ''}`} onClick={() => setActiveTab('gifting')}>
-            <div className="event-icon-circle">
-              <Gift size={24} />
-            </div>
+          <div className="event-offering-card">
+            <img
+              src={cardImage2}
+              alt="Corporate Gifting Concierge"
+              className="event-card-img"
+              onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+            />
             <span className="event-card-tag">VIP & Client Appreciation</span>
             <h3 className="event-card-title">Corporate Gifting Concierge</h3>
             <p className="event-card-desc">
-              Elevate executive gifting with bespoke candles featuring custom laser-engraved brass lids, handwritten wax-sealed notes, and multi-address Pan-India fulfillment.
+              Bespoke candles with custom lids and wax-sealed notes, with tiered pricing from 25 to 5,000+ units and pan-India fulfillment.
             </p>
-            <ul className="event-perks-list">
-              <li>&bull; Volume tiered pricing (25 to 5,000+ units)</li>
-              <li>&bull; White-glove direct doorstep shipping across India</li>
-              <li>&bull; Dedicated gifting concierge project manager</li>
-            </ul>
           </div>
 
-          {/* Card 3: Private Celebrations */}
-          <div className={`event-offering-card ${activeTab === 'private' ? 'highlighted' : ''}`} onClick={() => setActiveTab('private')}>
-            <div className="event-icon-circle">
-              <Sparkles size={24} />
-            </div>
+          <div className="event-offering-card">
+            <img
+              src={cardImage3}
+              alt="Private Celebrations & Bridal"
+              className="event-card-img"
+              onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+            />
             <span className="event-card-tag">Celebrations & Gatherings</span>
             <h3 className="event-card-title">Private Celebrations & Bridal</h3>
             <p className="event-card-desc">
-              Create unforgettable memories for bridal celebrations, milestone birthdays, and private dinner parties with custom candle-making and sensory pairing.
+              Custom scent-naming and candle-making for milestone birthdays, bridal celebrations, and private dinner parties.
             </p>
-            <ul className="event-perks-list">
-              <li>&bull; Intimate private atelier buyout options</li>
-              <li>&bull; Custom scent naming for wedding favors</li>
-              <li>&bull; Complimentary welcome toast included</li>
-            </ul>
           </div>
 
         </div>
       </section>
 
-      {/* Workshop Gallery & Details Strip */}
+      {/* Workshop Highlight Strip */}
       <section className="events-highlight-strip">
         <div className="events-highlight-container">
           <div className="events-highlight-img">
-            <img src={boutiqueImg} alt="Workshop table in experiential atelier" />
+            <img
+              src={highlightImage}
+              alt="Master chandler workshop experience"
+              onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE; }}
+            />
           </div>
           <div className="events-highlight-text">
             <span className="section-eyebrow">What's Included</span>
@@ -122,7 +198,7 @@ export default function EventsPage({ initialTab = 'corporate', onNavigate }) {
             
             <div className="workshop-feature-item">
               <strong>1. The Olfactory Scent Bar:</strong>
-              <p>Explore over 30 pure botanical oils and raw aroma isolates, learning how top, heart, and base notes harmonize.</p>
+              <p>Explore pure botanical oils and raw aroma isolates, learning how top, heart, and base notes harmonize.</p>
             </div>
             <div className="workshop-feature-item">
               <strong>2. Artisan Hand-Pouring:</strong>
@@ -130,21 +206,34 @@ export default function EventsPage({ initialTab = 'corporate', onNavigate }) {
             </div>
             <div className="workshop-feature-item">
               <strong>3. Custom Naming & Packaging:</strong>
-              <p>Create a bespoke name for your candle, hand-label your piece, and receive an embossed keepsake box.</p>
+              <p>Name your candle, hand-label your piece, and receive an embossed keepsake box.</p>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Emotional Close */}
+      <section className="events-emotional-close">
+        <div className="events-emotional-content">
+          <h2 className="events-emotional-title">
+            Let's create gifts that last longer than flowers<br />and mean more than a logoed pen.
+          </h2>
+          <a href="#event-booking" className="btn-luxury-cta">
+            Let's Connect &rarr;
+          </a>
+        </div>
+      </section>
+
       {/* Interactive Event & Gifting Inquiry Form */}
+          {/* Interactive Event & Gifting Inquiry Form */}
       <section className="section event-form-section" id="event-booking">
         <div className="event-form-container">
           
           <div className="event-form-header">
-            <span className="section-eyebrow">Reserve Your Date</span>
-            <h2 className="section-title">Request Event Proposal & Date Availability</h2>
+            <span className="section-eyebrow">Reserve the Gifting</span>
+            <h2 className="section-title">Request for Corporate Event and Gifting</h2>
             <p className="event-form-subtext">
-              Share details about your gathering or gifting project. Our events director will respond with a tailored itinerary and quote within 24 hours.
+              Share details about your event gifting. Our representative will respond within 24 hours.
             </p>
           </div>
 
@@ -216,21 +305,20 @@ export default function EventsPage({ initialTab = 'corporate', onNavigate }) {
 
               <div className="form-grid-3">
                 <div className="form-group">
-                  <label>Experience Type</label>
+                  <label>Event Type</label>
                   <select
                     value={formData.eventType}
                     onChange={(e) => setFormData({ ...formData, eventType: e.target.value })}
                     className="form-select"
                   >
-                    <option value="Corporate Team Workshop">Corporate Team Workshop</option>
-                    <option value="Corporate Gifting Project">Corporate Gifting Concierge</option>
-                    <option value="Bridal Shower / Celebration">Private Bridal / Celebration</option>
-                    <option value="Private Atelier Buyout">Full Atelier Buyout (VIP Event)</option>
+                    <option value="Corporate Gifting">Corporate Gifting</option>
+                    <option value="Private Celebration">Private Celebration</option>
+                    <option value="VIP Event">VIP Event</option>
                   </select>
                 </div>
 
                 <div className="form-group">
-                  <label>Guest / Unit Count</label>
+                  <label>No. of Units</label>
                   <select
                     value={formData.guestCount}
                     onChange={(e) => setFormData({ ...formData, guestCount: e.target.value })}
@@ -244,7 +332,7 @@ export default function EventsPage({ initialTab = 'corporate', onNavigate }) {
                 </div>
 
                 <div className="form-group">
-                  <label>Target Date</label>
+                  <label>Preferred Date</label>
                   <input
                     type="date"
                     value={formData.date}
@@ -257,29 +345,24 @@ export default function EventsPage({ initialTab = 'corporate', onNavigate }) {
               <div className="form-grid-2">
                 <div className="form-group">
                   <label>Preferred Location</label>
-                  <select
+                  <textarea
+                    rows={3}
+                    placeholder="Enter the full address for your event or gifting delivery..."
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="form-select"
-                  >
-                    <option value="Mumbai Flagship Atelier (Altamount Road)">Mumbai Flagship Atelier (Altamount Road)</option>
-                    <option value="Bengaluru Experiential Studio (Indiranagar)">Bengaluru Experiential Studio (Indiranagar)</option>
-                    <option value="Client Venue / Office (Pan-India Travel)">Client Venue / Office (Pan-India Travel)</option>
-                    <option value="Virtual Workshop with Shipped Kits">Virtual Workshop with Shipped DIY Kits</option>
-                  </select>
+                    className="form-textarea"
+                  />
                 </div>
 
                 <div className="form-group">
                   <label>Estimated Budget</label>
-                  <select
+                  <input
+                    type="text"
+                    placeholder="e.g. ₹50,000 - ₹1,50,000"
                     value={formData.budget}
                     onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                    className="form-select"
-                  >
-                    <option value="₹25,000 - ₹75,000">₹25,000 &mdash; ₹75,000</option>
-                    <option value="₹75,000 - ₹2,00,000">₹75,000 &mdash; ₹2,00,000</option>
-                    <option value="₹2,00,000+">₹2,00,000+ (Custom Luxury Program)</option>
-                  </select>
+                    className="form-input"
+                  />
                 </div>
               </div>
 

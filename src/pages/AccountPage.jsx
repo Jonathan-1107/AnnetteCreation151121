@@ -1,126 +1,100 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, Package, Heart, RefreshCw, MapPin, LogOut, 
   ShoppingBag, Truck, CheckCircle, Clock, Sparkles 
 } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
+import { supabase } from '../supabaseClient';
+import { useProducts } from '../hooks/useProducts';
 
 export default function AccountPage({ 
   initialTab = 'overview',
-  orders = [],
   wishlist = [],
   onAddToCart,
   onToggleWishlist,
-  onNavigate 
+  onNavigate,
+  user,
+  signOut
 }) {
   const [activeTab, setActiveTab] = useState(initialTab || 'overview');
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
-  const [authEmail, setAuthEmail] = useState('');
-  const [authPassword, setAuthPassword] = useState('');
-  
-  // Subscription state
-  const [subStatus, setSubStatus] = useState('Active');
-  const [subScent, setSubScent] = useState("Forest Ave. 11 oz");
-  const [subToast, setSubToast] = useState('');
+  const { products: allProducts } = useProducts();
 
-  // Default mock orders if none placed yet
-  const displayOrders = orders.length > 0 ? orders : [
-    {
-      orderNumber: "AP-IN-784210",
-      date: "Aug 02, 2026",
-      status: "Delivered",
-      total: 2848,
-      shippingCost: 0,
-      shippingMethodTitle: "Standard Complimentary Pan-India Shipping",
-      estimatedDelivery: "Aug 06, 2026",
-      shippingAddress: {
-        name: "Ananya Verma",
-        address: "14 Altamount Road, Apt 8B",
-        city: "Mumbai",
-        state: "Maharashtra",
-        zip: "400026",
-        country: "India"
-      },
-      items: [
-        { id: 1, title: "Forest Ave.", price: 1499, quantity: 1, image: PRODUCTS[0].image },
-        { id: 2, title: "Perloat", price: 1349, quantity: 1, image: PRODUCTS[1].image }
-      ]
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+
+    async function fetchOrders() {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*, order_items(*)')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error(error);
+        setOrdersLoading(false);
+        return;
+      }
+
+      const shaped = data.map((ord) => ({
+        orderNumber: ord.order_number,
+        date: new Date(ord.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
+        status: ord.status,
+        total: ord.total,
+        shippingCost: ord.shipping_cost,
+        shippingMethodTitle: ord.shipping_method,
+        shippingAddress: {
+          name: ord.shipping_name,
+          address: ord.shipping_address,
+          city: ord.shipping_city,
+          state: ord.shipping_state,
+          zip: ord.shipping_zip,
+          country: ord.shipping_country
+        },
+        items: (ord.order_items || []).map((it) => ({
+          id: it.product_id,
+          title: it.product_title,
+          sku: it.sku,
+          price: it.price_at_purchase,
+          quantity: it.quantity,
+          image: allProducts.find((p) => p.id === it.product_id)?.image || ''
+        }))
+      }));
+
+      setOrders(shaped);
+      setOrdersLoading(false);
     }
-  ];
 
-  // Wishlist products
-  const wishlistedProducts = PRODUCTS.filter(p => wishlist.includes(p.id));
+    fetchOrders();
+  }, [user, allProducts]);
 
-  const handleAuthSubmit = (e) => {
-    e.preventDefault();
-    setIsLoggedIn(true);
+  // Wishlist products, pulled from real Supabase catalog
+  const wishlistedProducts = allProducts.filter(p => wishlist.includes(p.id));
+
+  const handleSignOut = async () => {
+    if (signOut) await signOut();
+    if (onNavigate) onNavigate('home');
   };
 
-  const handlePauseSub = () => {
-    setSubStatus(prev => prev === 'Active' ? 'Paused' : 'Active');
-    setSubToast(subStatus === 'Active' ? 'Subscription paused successfully.' : 'Subscription resumed!');
-    setTimeout(() => setSubToast(''), 4000);
-  };
-
-  const handleSwapScent = (newScent) => {
-    setSubScent(newScent);
-    setSubToast(`Next box updated to: ${newScent}`);
-    setTimeout(() => setSubToast(''), 4000);
-  };
-
-  if (!isLoggedIn) {
+  // If somehow reached without a logged-in user, send to login instead of showing a fake form
+  if (!user) {
     return (
       <div className="account-auth-page">
-        <div className="auth-card">
+        <div className="auth-card" style={{ textAlign: 'center' }}>
           <span className="auth-script-accent">A</span>
-          <h2 className="auth-title">{authMode === 'login' ? 'Sign In to Your Sanctuary' : 'Join The Annette Pure Circle'}</h2>
-          <p className="auth-subtext">
-            {authMode === 'login' 
-              ? 'Access your orders, track shipments, and manage your candle subscriptions.' 
-              : 'Create an account to earn VIP reward points and receive private vault invitations.'}
-          </p>
-
-          <form onSubmit={handleAuthSubmit} className="auth-form">
-            <div className="form-group">
-              <label>Email Address</label>
-              <input
-                type="email"
-                required
-                placeholder="patron@annettepure.in"
-                value={authEmail}
-                onChange={(e) => setAuthEmail(e.target.value)}
-                className="form-input"
-              />
-            </div>
-            <div className="form-group">
-              <label>Password</label>
-              <input
-                type="password"
-                required
-                placeholder="••••••••"
-                value={authPassword}
-                onChange={(e) => setAuthPassword(e.target.value)}
-                className="form-input"
-              />
-            </div>
-
-            <button type="submit" className="btn-luxury-cta auth-submit-btn">
-              {authMode === 'login' ? 'Sign In &rarr;' : 'Create Account &rarr;'}
-            </button>
-          </form>
-
-          <div className="auth-toggle-row">
-            {authMode === 'login' ? (
-              <p>Don't have an account? <button onClick={() => setAuthMode('register')}>Create one here</button></p>
-            ) : (
-              <p>Already have an account? <button onClick={() => setAuthMode('login')}>Sign in here</button></p>
-            )}
-          </div>
+          <h2 className="auth-title">Please Sign In</h2>
+          <p className="auth-subtext">You need to be signed in to view your account.</p>
+          <button className="btn-luxury-cta auth-submit-btn" onClick={() => onNavigate('login')}>
+            Go to Sign In &rarr;
+          </button>
         </div>
       </div>
     );
   }
+
+  const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Patron';
+  const avatarInitials = displayName.slice(0, 2).toUpperCase();
 
   return (
     <div className="account-page">
@@ -130,19 +104,18 @@ export default function AccountPage({
         <div className="account-header-container">
           <div className="account-user-info">
             <div className="user-avatar-circle">
-              <span>AP</span>
+              <span>{avatarInitials}</span>
             </div>
             <div>
               <span className="user-greeting">Welcome back,</span>
-              <h1 className="user-name">Patron Member</h1>
+              <h1 className="user-name">{displayName}</h1>
               <div className="user-badge-row">
-                <span className="loyalty-pill"><Sparkles size={12} /> Gold Circle Member</span>
-                <span className="loyalty-points">450 Scent Points (₹450 Reward Voucher)</span>
+                <span className="loyalty-pill"><Sparkles size={12} /> {user.email}</span>
               </div>
             </div>
           </div>
 
-          <button className="logout-btn" onClick={() => setIsLoggedIn(false)}>
+          <button className="logout-btn" onClick={handleSignOut}>
             <LogOut size={16} />
             <span>Sign Out</span>
           </button>
@@ -166,7 +139,7 @@ export default function AccountPage({
             onClick={() => setActiveTab('orders')}
           >
             <Package size={16} />
-            <span>Order History & Tracking ({displayOrders.length})</span>
+            <span>Order History & Tracking ({orders.length})</span>
           </button>
 
           <button 
@@ -175,14 +148,6 @@ export default function AccountPage({
           >
             <Heart size={16} />
             <span>Saved Wishlist ({wishlist.length})</span>
-          </button>
-
-          <button 
-            className={`account-nav-btn ${activeTab === 'subscriptions' ? 'active' : ''}`}
-            onClick={() => setActiveTab('subscriptions')}
-          >
-            <RefreshCw size={16} />
-            <span>Candle Subscriptions (1)</span>
           </button>
 
           <button 
@@ -205,7 +170,7 @@ export default function AccountPage({
               <div className="overview-cards-row">
                 <div className="overview-summary-card">
                   <span className="summary-card-label">Total Orders Placed</span>
-                  <span className="summary-card-val">{displayOrders.length}</span>
+                  <span className="summary-card-val">{orders.length}</span>
                   <button onClick={() => setActiveTab('orders')} className="summary-card-link">View orders &rarr;</button>
                 </div>
                 <div className="overview-summary-card">
@@ -213,49 +178,56 @@ export default function AccountPage({
                   <span className="summary-card-val">{wishlist.length}</span>
                   <button onClick={() => setActiveTab('wishlist')} className="summary-card-link">View wishlist &rarr;</button>
                 </div>
-                <div className="overview-summary-card">
-                  <span className="summary-card-label">Active Subscription</span>
-                  <span className="summary-card-val">{subStatus}</span>
-                  <button onClick={() => setActiveTab('subscriptions')} className="summary-card-link">Manage box &rarr;</button>
-                </div>
               </div>
 
               {/* Recent Order Preview */}
-              <div className="recent-order-section">
-                <h3 className="section-subheading">Latest Order</h3>
-                <div className="order-item-card">
-                  <div className="order-card-header">
-                    <div>
-                      <strong>Order #{displayOrders[0].orderNumber}</strong>
-                      <span className="order-date-tag">Placed on {displayOrders[0].date}</span>
-                    </div>
-                    <span className="order-status-badge delivered">{displayOrders[0].status}</span>
-                  </div>
-
-                  <div className="order-items-row">
-                    {displayOrders[0].items.map((item, i) => (
-                      <div className="order-mini-product" key={i}>
-                        <img src={item.image} alt={item.title} />
-                        <div>
-                          <h4>{item.title}</h4>
-                          <span>Qty: {item.quantity} &bull; ₹{item.price.toLocaleString('en-IN')}</span>
-                        </div>
+              {ordersLoading ? (
+                <p style={{ color: '#8A8478' }}>Loading your orders...</p>
+              ) : orders.length === 0 ? (
+                <div className="empty-wishlist-box">
+                  <Package size={44} strokeWidth={1} />
+                  <h3>No Orders Yet</h3>
+                  <p>Once you place an order, it will show up here.</p>
+                  <button className="btn-luxury-cta" onClick={() => onNavigate('shop')}>
+                    Browse Candles &rarr;
+                  </button>
+                </div>
+              ) : (
+                <div className="recent-order-section">
+                  <h3 className="section-subheading">Latest Order</h3>
+                  <div className="order-item-card">
+                    <div className="order-card-header">
+                      <div>
+                        <strong>Order #{orders[0].orderNumber}</strong>
+                        <span className="order-date-tag">Placed on {orders[0].date}</span>
                       </div>
-                    ))}
-                  </div>
+                      <span className="order-status-badge delivered">{orders[0].status}</span>
+                    </div>
 
-                  <div className="order-card-footer">
-                    <span>Total: <strong>₹{displayOrders[0].total.toLocaleString('en-IN')}</strong></span>
-                    <button 
-                      className="btn-luxe"
-                      onClick={() => setActiveTab('orders')}
-                    >
-                      View Full Details & Track &rarr;
-                    </button>
+                    <div className="order-items-row">
+                      {orders[0].items.map((item, i) => (
+                        <div className="order-mini-product" key={i}>
+                          <img src={item.image} alt={item.title} />
+                          <div>
+                            <h4>{item.title}</h4>
+                            <span>Qty: {item.quantity} &bull; ₹{item.price.toLocaleString('en-IN')}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="order-card-footer">
+                      <span>Total: <strong>₹{Math.round(orders[0].total).toLocaleString('en-IN')}</strong></span>
+                      <button 
+                        className="btn-luxe"
+                        onClick={() => setActiveTab('orders')}
+                      >
+                        View Full Details & Track &rarr;
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-
+              )}
             </div>
           )}
 
@@ -264,69 +236,78 @@ export default function AccountPage({
             <div className="orders-tab-content">
               <h2 className="tab-heading">Order History & Shipment Tracking</h2>
 
-              {displayOrders.map((ord, idx) => (
-                <div className="full-order-card" key={idx}>
-                  <div className="full-order-header">
-                    <div>
-                      <span className="order-id-label">Order Reference: <strong>#{ord.orderNumber}</strong></span>
-                      <span className="order-placed-date">Placed: {ord.date}</span>
-                    </div>
-                    <span className="order-status-badge active">{ord.status}</span>
-                  </div>
-
-                  {/* Tracking Timeline */}
-                  <div className="order-tracking-strip">
-                    <div className="tracking-step done">
-                      <CheckCircle size={14} />
-                      <span>Order Confirmed</span>
-                    </div>
-                    <div className="tracking-step done">
-                      <CheckCircle size={14} />
-                      <span>Hand-Poured & Cured</span>
-                    </div>
-                    <div className="tracking-step in-progress">
-                      <Truck size={14} />
-                      <span>In Transit via Blue Dart</span>
-                    </div>
-                    <div className="tracking-step">
-                      <Clock size={14} />
-                      <span>Delivered</span>
-                    </div>
-                  </div>
-
-                  <div className="order-items-grid">
-                    {ord.items.map((item, itemIdx) => (
-                      <div className="order-item-detail-row" key={itemIdx}>
-                        <img src={item.image} alt={item.title} className="order-item-thumb" />
-                        <div className="order-item-info">
-                          <h4>{item.title}</h4>
-                          <span>Quantity: {item.quantity} &bull; 100% Organic Soy</span>
-                          <span className="order-item-unit-price">₹{item.price.toLocaleString('en-IN')} each</span>
-                        </div>
-                        <button 
-                          className="btn-luxe order-reorder-btn"
-                          onClick={() => {
-                            onAddToCart(item, 1);
-                            alert(`Added ${item.title} back to your bag!`);
-                          }}
-                        >
-                          Reorder
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="full-order-footer">
-                    <div className="order-shipping-summary">
-                      <strong>Shipping to:</strong> {ord.shippingAddress?.name}, {ord.shippingAddress?.address}, {ord.shippingAddress?.city}
-                    </div>
-                    <div className="order-total-amount">
-                      <span>Total Paid:</span>
-                      <strong>₹{Math.round(ord.total).toLocaleString('en-IN')}</strong>
-                    </div>
-                  </div>
+              {ordersLoading ? (
+                <p style={{ color: '#8A8478' }}>Loading your orders...</p>
+              ) : orders.length === 0 ? (
+                <div className="empty-wishlist-box">
+                  <Package size={44} strokeWidth={1} />
+                  <h3>No Orders Yet</h3>
+                  <p>Once you place an order, it will show up here.</p>
+                  <button className="btn-luxury-cta" onClick={() => onNavigate('shop')}>
+                    Browse Candles &rarr;
+                  </button>
                 </div>
-              ))}
+              ) : (
+                orders.map((ord, idx) => (
+                  <div className="full-order-card" key={idx}>
+                    <div className="full-order-header">
+                      <div>
+                        <span className="order-id-label">Order Reference: <strong>#{ord.orderNumber}</strong></span>
+                        <span className="order-placed-date">Placed: {ord.date}</span>
+                      </div>
+                      <span className="order-status-badge active">{ord.status}</span>
+                    </div>
+
+                    {/* Tracking Timeline */}
+                    <div className="order-tracking-strip">
+                      <div className="tracking-step done">
+                        <CheckCircle size={14} />
+                        <span>Order Confirmed</span>
+                      </div>
+                      <div className={`tracking-step ${ord.status !== 'processing' ? 'done' : 'in-progress'}`}>
+                        <Truck size={14} />
+                        <span>Hand-Poured & Cured</span>
+                      </div>
+                      <div className="tracking-step">
+                        <Clock size={14} />
+                        <span>Delivered</span>
+                      </div>
+                    </div>
+
+                    <div className="order-items-grid">
+                      {ord.items.map((item, itemIdx) => (
+                        <div className="order-item-detail-row" key={itemIdx}>
+                          <img src={item.image} alt={item.title} className="order-item-thumb" />
+                          <div className="order-item-info">
+                            <h4>{item.title}</h4>
+                            {item.sku && <span style={{ fontSize: '0.75rem', color: '#8A8478' }}>SKU: {item.sku}</span>}
+                            <span>Quantity: {item.quantity} &bull; 100% Organic Soy</span>
+                            <span className="order-item-unit-price">₹{item.price.toLocaleString('en-IN')} each</span>
+                          </div>
+                          <button 
+                            className="btn-luxe order-reorder-btn"
+                            onClick={() => {
+                              onAddToCart(item, 1);
+                            }}
+                          >
+                            Reorder
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="full-order-footer">
+                      <div className="order-shipping-summary">
+                        <strong>Shipping to:</strong> {ord.shippingAddress?.name}, {ord.shippingAddress?.address}, {ord.shippingAddress?.city}
+                      </div>
+                      <div className="order-total-amount">
+                        <span>Total Paid:</span>
+                        <strong>₹{Math.round(ord.total).toLocaleString('en-IN')}</strong>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           )}
 
@@ -382,92 +363,24 @@ export default function AccountPage({
             </div>
           )}
 
-          {/* 4. SUBSCRIPTIONS TAB */}
-          {activeTab === 'subscriptions' && (
-            <div className="subscriptions-tab-content">
-              <h2 className="tab-heading">Monthly Candle Subscription</h2>
-              
-              {subToast && (
-                <div className="pdp-toast-feedback" style={{ marginBottom: '20px' }}>
-                  <Sparkles size={16} />
-                  <span>{subToast}</span>
-                </div>
-              )}
-
-              <div className="subscription-card">
-                <div className="sub-card-header">
-                  <div>
-                    <span className="sub-status-tag">{subStatus}</span>
-                    <h3 className="sub-title">The Atelier Scent Club</h3>
-                    <p className="sub-meta">10% VIP Discount &bull; Free Pan-India Shipping on Every Box</p>
-                  </div>
-                  <span className="sub-price">₹1,349 / every 60 days</span>
-                </div>
-
-                <div className="sub-current-item">
-                  <img src={PRODUCTS[0].image} alt="Subscription Candle" className="sub-candle-img" />
-                  <div className="sub-candle-details">
-                    <h4>Current Scent Selection: <strong>{subScent}</strong></h4>
-                    <p>Next Scheduled Pour & Dispatch: <strong>September 15, 2026</strong></p>
-                    <p>Delivery Interval: <strong>Every 60 Days</strong></p>
-                  </div>
-                </div>
-
-                {/* Scent Swap Selector */}
-                <div className="sub-swap-section">
-                  <h4>Swap Next Month's Scent:</h4>
-                  <div className="sub-scents-row">
-                    {PRODUCTS.slice(0, 5).map((prod) => (
-                      <button
-                        key={prod.id}
-                        className={`sub-scent-swap-btn ${subScent.includes(prod.title) ? 'active' : ''}`}
-                        onClick={() => handleSwapScent(`${prod.title} 11 oz`)}
-                      >
-                        <img src={prod.image} alt={prod.title} />
-                        <span>{prod.title}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="sub-card-actions">
-                  <button 
-                    className="btn-luxury-outline"
-                    onClick={handlePauseSub}
-                  >
-                    {subStatus === 'Active' ? 'Pause Subscription' : 'Resume Subscription'}
-                  </button>
-                  <button 
-                    className="btn-luxe"
-                    onClick={() => {
-                      setSubToast('Next billing date skipped to November 15, 2026.');
-                      setTimeout(() => setSubToast(''), 4000);
-                    }}
-                  >
-                    Skip Next Delivery
-                  </button>
-                </div>
-
-              </div>
-            </div>
-          )}
-
-          {/* 5. SAVED ADDRESSES TAB */}
+          {/* 4. SAVED ADDRESSES TAB */}
           {activeTab === 'addresses' && (
             <div className="addresses-tab-content">
               <h2 className="tab-heading">Saved Addresses</h2>
+              <p style={{ color: '#8A8478', marginBottom: '16px' }}>
+                Your most recent shipping address will appear here after your first order.
+              </p>
 
-              <div className="address-card default">
-                <div className="address-badge">Default Shipping Destination</div>
-                <h3>Patron Destination</h3>
-                <p>14 Altamount Road, Penthouse 8B</p>
-                <p>South Mumbai, Maharashtra - 400026, India</p>
-                <p>Phone: +91 98200 12345</p>
-
-                <div className="address-card-actions">
-                  <button className="btn-luxe">Edit Address</button>
+              {orders.length > 0 ? (
+                <div className="address-card default">
+                  <div className="address-badge">Most Recent Shipping Destination</div>
+                  <h3>{orders[0].shippingAddress?.name}</h3>
+                  <p>{orders[0].shippingAddress?.address}</p>
+                  <p>{orders[0].shippingAddress?.city}, {orders[0].shippingAddress?.state} - {orders[0].shippingAddress?.zip}, {orders[0].shippingAddress?.country}</p>
                 </div>
-              </div>
+              ) : (
+                <p style={{ color: '#8A8478' }}>No saved addresses yet.</p>
+              )}
             </div>
           )}
 
