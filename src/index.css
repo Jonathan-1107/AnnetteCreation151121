@@ -7549,3 +7549,112 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 0.64rem;
   }
 }
+/* ==========================================================================
+   22. LOGIN PAGE (Sign In / Create Account)
+   ========================================================================== */
+.login-page {
+  min-height: calc(100vh - var(--header-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background-color: var(--bg-primary);
+}
+
+.login-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.login-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 50px 40px;
+  max-width: 460px;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.login-title {
+  font-size: 1.9rem;
+  margin: 10px 0 8px;
+}
+
+.login-subtitle {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.login-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.login-alert.error {
+  background-color: #FBEDEC;
+  color: #B23B3B;
+  border: 1px solid rgba(178, 59, 59, 0.25);
+}
+
+.login-alert.success {
+  background-color: #EBF5EE;
+  color: #2E6F40;
+  border: 1px solid rgba(46, 111, 64, 0.25);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon svg {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.input-with-icon .form-input {
+  padding-left: 40px;
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+}
+
+.login-toggle-text {
+  margin-top: 22px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.login-toggle-link {
+  color: var(--accent-gold-dark);
+  font-weight: 600;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+}

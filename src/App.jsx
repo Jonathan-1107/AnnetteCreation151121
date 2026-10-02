@@ -287,9 +287,9 @@ function App() {
   />
 )}
 
-{currentPage === 'login' && (
+ {/* {currentPage === 'login' && (
   <LoginPage onNavigate={handleNavigate} />
-)}
+)}*/}
 
         {currentPage === 'contact' && (
           <ContactFaqPage

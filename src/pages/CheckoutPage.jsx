@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ShieldCheck, Lock, CreditCard, Truck, Gift, ArrowRight, ArrowLeft, 
   ShoppingBag, Sparkles, CheckCircle, Smartphone, Building2, Banknote 
@@ -24,14 +24,18 @@ export default function CheckoutPage({
   const [currentStep, setCurrentStep] = useState(1); // 1: Address, 2: Shipping, 3: Payment, 4: Confirmation
   
   // Form State
-  const [email, setEmail] = useState('patron@annettepure.in');
-  const [fullName, setFullName] = useState('Patron Member');
-  const [phone, setPhone] = useState('+91 98200 12345');
-  const [address, setAddress] = useState('14 Altamount Road, Penthouse 8B');
+  const [email, setEmail] = useState(user?.email || '');
+  const [fullName, setFullName] = useState(user?.user_metadata?.full_name || '');
+  useEffect(() => {
+  if (user?.email) setEmail(user.email);
+  if (user?.user_metadata?.full_name) setFullName(user.user_metadata.full_name);
+}, [user]);
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [apt, setApt] = useState('');
-  const [city, setCity] = useState('Mumbai');
+  const [city, setCity] = useState('');
   const [state, setState] = useState('Maharashtra');
-  const [zip, setZip] = useState('400026');
+  const [zip, setZip] = useState('');
   const [country, setCountry] = useState('India');
   const [saveInfo, setSaveInfo] = useState(true);
 
