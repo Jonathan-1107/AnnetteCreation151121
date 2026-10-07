@@ -24,7 +24,7 @@ import PoliciesPage from './pages/PoliciesPage';
 import LoginPage from './pages/LoginPage';
 
 // Default Product Data
-import { PRODUCTS } from './data/products';
+// import { PRODUCTS } from './data/products';
 
 function App() {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -35,45 +35,34 @@ function App() {
 
   // Cart State (Persisted)
   const [cartItems, setCartItems] = useState(() => {
-    try {
-      const saved = localStorage.getItem('annette_pure_cart');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.warn('LocalStorage error:', e);
-    }
-    // Default initial sample item for demonstration
-    return [
-      {
-        id: 1,
-        title: "Forest Ave.",
-        price: PRODUCTS[0].price,
-        image: PRODUCTS[0].image,
-        quantity: 1
-      }
-    ];
-  });
+  try {
+    const saved = localStorage.getItem('annette_pure_cart_v2');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {
+    console.warn('LocalStorage error:', e);
+  }
+  return [];
+});
 
-  // Wishlist State (Persisted)
-  const [wishlist, setWishlist] = useState(() => {
-    try {
-      const saved = localStorage.getItem('annette_pure_wishlist');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.warn('LocalStorage error:', e);
-    }
-    return [1, 3];
-  });
+const [wishlist, setWishlist] = useState(() => {
+  try {
+    const saved = localStorage.getItem('annette_pure_wishlist_v2');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {
+    console.warn('LocalStorage error:', e);
+  }
+  return [];
+});
 
-  // Placed Orders State (Persisted)
-  const [orders, setOrders] = useState(() => {
-    try {
-      const saved = localStorage.getItem('annette_pure_orders');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.warn('LocalStorage error:', e);
-    }
-    return [];
-  });
+const [orders, setOrders] = useState(() => {
+  try {
+    const saved = localStorage.getItem('annette_pure_orders_v2');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {
+    console.warn('LocalStorage error:', e);
+  }
+  return [];
+});
 
   // Drawers & Modals State
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -82,30 +71,27 @@ function App() {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   // Sync to LocalStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('annette_pure_cart', JSON.stringify(cartItems));
-    } catch (e) {}
-  }, [cartItems]);
+ useEffect(() => {
+  try { localStorage.setItem('annette_pure_cart_v2', JSON.stringify(cartItems)); } catch (e) {}
+}, [cartItems]);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem('annette_pure_wishlist', JSON.stringify(wishlist));
-    } catch (e) {}
-  }, [wishlist]);
+useEffect(() => {
+  try { localStorage.setItem('annette_pure_wishlist_v2', JSON.stringify(wishlist)); } catch (e) {}
+}, [wishlist]);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem('annette_pure_orders', JSON.stringify(orders));
-    } catch (e) {}
-  }, [orders]);
+useEffect(() => {
+  try { localStorage.setItem('annette_pure_orders_v2', JSON.stringify(orders)); } catch (e) {}
+}, [orders]);
 
   // Main Page Navigation Handler
-  const handleNavigate = (page, params = {}) => {
-    setCurrentPage(page);
-    setNavParams(params);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+ const [navKey, setNavKey] = useState(0);
+
+const handleNavigate = (page, params = {}) => {
+  setCurrentPage(page);
+  setNavParams(params);
+  setNavKey((k) => k + 1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
   // Cart Operations
   const handleAddToCart = (product, quantity = 1) => {
@@ -184,7 +170,9 @@ function App() {
         onCartOpen={() => setIsCartOpen(true)}
         onSearchOpen={() => setIsSearchOpen(true)}
         currentPage={currentPage}
+        currentCategory={navParams.category} 
         onNavigate={handleNavigate}
+        currentCategory={navParams.category}
         user={user}
       />
 
@@ -204,6 +192,7 @@ function App() {
 
         {currentPage === 'shop' && (
           <ShopPage
+            key={navKey}
             initialCategory={navParams.category || 'All Candles'}
             initialSearchQuery={navParams.searchQuery || ''}
             onQuickView={handleQuickView}
@@ -214,7 +203,7 @@ function App() {
           />
         )}
 
-        {currentPage === 'product' && (
+       {/* {currentPage === 'product' && (
           <ProductDetailPage
             product={navParams.product || PRODUCTS[0]}
             onAddToCart={handleAddToCart}
@@ -222,6 +211,14 @@ function App() {
             wishlist={wishlist}
             onToggleWishlist={handleToggleWishlist}
           />
+        )}*/}
+        {currentPage === 'product' && navParams.product && (
+        <ProductDetailPage product={navParams.product}
+         onAddToCart={handleAddToCart}
+         onNavigate={handleNavigate}
+            wishlist={wishlist}
+            onToggleWishlist={handleToggleWishlist} 
+         />
         )}
 
         {currentPage === 'private-label' && (

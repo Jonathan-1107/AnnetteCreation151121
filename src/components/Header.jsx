@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, User, ShoppingBag, Heart, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { useCatalogNav } from '../hooks/useCatalogNav';
+import logoFloralIcon from '../assets/logo-floral.png';
 
 export default function Header({ 
   cartCount = 0, 
@@ -8,6 +9,7 @@ export default function Header({
   onCartOpen, 
   onSearchOpen,
   currentPage = 'home',
+  currentCategory = null,
   onNavigate,
   user = null
 }) {
@@ -27,11 +29,11 @@ export default function Header({
 
   // Department-level nav items (Candles, Fragrance Glass Bottles) built live from Supabase
   const dynamicNavLinks = navDepartments.map((dept) => ({
-    name: dept.name,
-    page: 'shop',
-    category: null, // top-level department link shows all products
-    dropdown: dept.dropdown
-  }));
+  name: dept.name,
+  page: 'shop',
+  category: dept.name,        // was null
+  dropdown: dept.dropdown
+}));
 
     const staticNavLinks = [
     { name: 'Corporate Events', page: 'events' },
@@ -66,6 +68,16 @@ export default function Header({
       handleNavClick('login');
     }
   };
+  const isNavActive = (nav) => {
+  if (currentPage !== nav.page) return false;
+  if (nav.page !== 'shop') return true;
+  if (!currentCategory) return false;
+  if (nav.category === currentCategory) return true;
+  return (nav.dropdown || []).some(
+    (s) => s.category === currentCategory ||
+           (s.children || []).some((c) => c.category === currentCategory)
+  );
+};
   return (
     <header className={`main-header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="header-container">
@@ -90,17 +102,19 @@ export default function Header({
 
           <div className="header-brand-divider" aria-hidden="true" />
           
-          <button 
+                    <button 
             onClick={() => handleNavClick('home')} 
             className="header-logo-container"
             aria-label="Annette Pure Home"
           >
-            <div className="logo-monogram-mark" aria-hidden="true">
-              <span className="logo-script-accent">A</span>
-            </div>
+            <img 
+              src={logoFloralIcon} 
+              alt="" 
+              className="header-logo-floral-icon" 
+            />
             <div className="logo-text-group">
               <span className="logo-wordmark">ANNETTE PURE</span>
-              <span className="logo-submark">HANDMADE SOY CANDLES</span>
+              <span className="logo-submark">ECO FRIENDLY CANDLES</span>
             </div>
           </button>
         </div>
@@ -108,7 +122,7 @@ export default function Header({
         <nav className="desktop-nav" aria-label="Main Navigation">
           <ul className="nav-menu">
             {navLinks.map((nav) => {
-              const isActive = currentPage === nav.page;
+             const isActive = isNavActive(nav);
               return (
                 <li 
                   className={`nav-item ${isActive ? 'active' : ''} ${nav.dropdown ? 'has-dropdown' : ''}`} 
@@ -260,7 +274,7 @@ export default function Header({
                   <li key={nav.name} className="mobile-nav-item">
                     <div className="mobile-nav-link-row">
                       <button 
-                        className={`mobile-nav-link ${currentPage === nav.page ? 'active' : ''}`}
+                        className={`mobile-nav-link ${isNavActive(nav) ? 'active' : ''}`}
                         onClick={() => {
                           if (!nav.dropdown) {
                             handleNavClick(nav.page, nav.category);

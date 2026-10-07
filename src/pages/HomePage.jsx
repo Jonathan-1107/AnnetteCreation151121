@@ -26,10 +26,10 @@ export default function HomePage({
       >
         <div className="hero-overlay" />
         <div className="hero-content">
-          <span className="hero-eyebrow">Handcrafted in India Atelier &bull; 100% Organic Soy</span>
+          <span className="hero-eyebrow">Artisanal craftsmanship from India &bull; 100% Organic Soy</span>
           <h1 className="hero-title">Annette Pure</h1>
           <p className="hero-tagline">
-            Elegance translated through pure botanical scent. Hand-poured candles crafted with intention.
+           Hand-poured using 100% soy wax and aromatic essential oils for an effortless, natural ambiance
           </p>
           <div className="hero-cta-group">
             <button 
@@ -38,12 +38,7 @@ export default function HomePage({
             >
               Shop All Candles
             </button>
-            <button 
-              onClick={() => onNavigate('private-label')} 
-              className="btn-luxury-outline hero-btn-secondary"
-            >
-              Start a Private Label Project
-            </button>
+         
           </div>
         </div>
       </section>
@@ -80,19 +75,19 @@ export default function HomePage({
       {/* <MilestoneBanner onNavigate={onNavigate} /> */}
       {/* Short 5-second Milestone Video */}
 <section className="video-hero-section">
-  <video
-    className="video-hero-media"
-    src="/video/Proper%20video%20Annette%20Pure.mp4"
-    autoPlay
-    muted
-    loop
-    playsInline
-    preload="metadata"
-  />
+ <video
+  className="video-hero-media"
+  src="/video/Website%20video.mp4"
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="metadata"
+/>
   <div className="video-hero-overlay" />
   <div className="video-hero-content">
     <h2>Classic Scents, Crafted with Care</h2>
-    <p>Hand-poured in our India atelier with 100% organic soy wax</p>
+     <p>Hand-poured soy wax candles, made in India</p>
     <button
       className="btn-luxury-cta"
       onClick={() => onNavigate && onNavigate('story')}

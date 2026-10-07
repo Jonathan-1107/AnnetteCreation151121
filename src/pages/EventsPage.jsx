@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Users, Gift, Sparkles, Check, Send, Compass, Palette, Package, Truck } from 'lucide-react';
 import { useRandomProductImages } from '../hooks/useRandomProductImages';
+import { supabase } from '../supabaseClient';
 
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
 export default function EventsPage({ onNavigate }) {
   const [submitted, setSubmitted] = useState(false);
-    const [formData, setFormData] = useState({
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [formData, setFormData] = useState({
     name: '',
     company: '',
     email: '',
@@ -27,8 +30,32 @@ export default function EventsPage({ onNavigate }) {
   const cardImage3 = randomImages[3] || PLACEHOLDER_IMAGE;
   const highlightImage = randomImages[4] || PLACEHOLDER_IMAGE;
 
-  const handleSubmit = (e) => {
+   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+    setSubmitError('');
+
+    const { error } = await supabase.from('event_inquiries').insert({
+      name: formData.name,
+      company: formData.company || null,
+      email: formData.email,
+      phone: formData.phone || null,
+      event_type: formData.eventType,
+      unit_count: formData.guestCount,
+      preferred_date: formData.date || null,
+      preferred_location: formData.location || null,
+      estimated_budget: formData.budget || null,
+      notes: formData.notes || null
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      console.error(error);
+      setSubmitError('Something went wrong submitting your inquiry. Please try again.');
+      return;
+    }
+
     setSubmitted(true);
   };
 
@@ -377,8 +404,9 @@ export default function EventsPage({ onNavigate }) {
                 />
               </div>
 
-              <button type="submit" className="btn-luxury-cta event-submit-btn">
-                <span>Submit Event Inquiry</span>
+              {submitError && <p className="auth-error-text">{submitError}</p>}
+              <button type="submit" className="btn-luxury-cta event-submit-btn" disabled={submitting}>
+                <span>{submitting ? 'Submitting...' : 'Submit Event Inquiry'}</span>
                 <Send size={16} />
               </button>
 

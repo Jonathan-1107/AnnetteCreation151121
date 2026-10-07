@@ -165,30 +165,23 @@ export default function ProductDetailPage({
           )}
 
           {/* Candle Specifications Table */}
+                   {/* Candle Specifications Table */}
           <div className="pdp-specs-grid">
             <div className="spec-item">
               <span className="spec-label">Wax Composition</span>
               <span className="spec-value">{currentProduct.waxType || '100% Organic Soy'}</span>
             </div>
             <div className="spec-item">
-              <span className="spec-label">Burn Time</span>
-              <span className="spec-value">{currentProduct.burnTime || '60-70 Hours'}</span>
-            </div>
-            <div className="spec-item">
               <span className="spec-label">Wick Type</span>
               <span className="spec-value">{currentProduct.wick || 'Lead-Free Braided Cotton'}</span>
             </div>
             <div className="spec-item">
-              <span className="spec-label">Net Weight</span>
-              <span className="spec-value">{currentProduct.netWeight || '11 oz / 312g'}</span>
-            </div>
-            <div className="spec-item">
-              <span className="spec-label">Vessel Material</span>
-              <span className="spec-value">{currentProduct.vessel || 'Matte Amber Heavy Glass'}</span>
+              <span className="spec-label">Fragrance</span>
+              <span className="spec-value">100% Essential Oils</span>
             </div>
             <div className="spec-item">
               <span className="spec-label">Origin</span>
-              <span className="spec-value">Hand-Poured in India Atelier</span>
+              <span className="spec-value">Hand-Poured in India</span>
             </div>
           </div>
         </div>  
@@ -545,7 +538,7 @@ export default function ProductDetailPage({
               </div>
 
               <div className="form-group">
-                <label>Patron Title & Location</label>
+                <label>Name of Person & Location</label>
                 <input
                   type="text"
                   required

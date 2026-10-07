@@ -111,7 +111,7 @@ export default function Bestsellers({ onQuickView, onAddToCart, onNavigate }) {
                   )}
                 </div>
                 
-                <span className="product-unit-price">100% Soy &bull; {product.netWeight || '11 oz'}</span>
+                <span className="product-unit-price">100% Soy Wax &bull; 100% Fragrance Essential Oil</span>
               </div>
             </div>
           ))}

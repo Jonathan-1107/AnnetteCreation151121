@@ -53,7 +53,7 @@ export default function CategoryGrid({ onNavigate }) {
   }, []);
 
   return (
-    <section className="section category-section">
+    <section className="section category-section category-section-styled">
       <div className="section-intro">
         <span className="section-eyebrow">Curated Olfactory Realms</span>
         <h2 className="section-title">Shop by Collection</h2>

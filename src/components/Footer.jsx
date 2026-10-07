@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { ArrowRight, Check } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 
 export default function Footer({ onNavigate }) {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleLink = (page, tab = null, category = null) => {
     if (onNavigate) {
@@ -12,13 +15,28 @@ export default function Footer({ onNavigate }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.name && form.email && form.message) {
-      setSent(true);
-      setForm({ name: '', email: '', message: '' });
-      setTimeout(() => setSent(false), 5000);
+    if (!(form.name && form.email && form.message)) return;
+
+    setSubmitting(true);
+    setError('');
+
+    const { error: insertError } = await supabase
+      .from('contact_messages')
+      .insert({ name: form.name, email: form.email, message: form.message });
+
+    setSubmitting(false);
+
+    if (insertError) {
+      console.error(insertError);
+      setError('Something went wrong. Please try again.');
+      return;
     }
+
+    setSent(true);
+    setForm({ name: '', email: '', message: '' });
+    setTimeout(() => setSent(false), 5000);
   };
 
   return (
@@ -64,10 +82,9 @@ export default function Footer({ onNavigate }) {
         <div className="footer-column footer-visit-col">
           <h4 className="footer-title">Visit Us</h4>
           <div className="footer-visit-text">
-            <p>Bandra West, Mumbai</p>
-            <p>Indiranagar, Bengaluru</p>
-            <p className="footer-visit-phone">+91 98200 12345</p>
-            <p>1800-266-8730</p>
+            <p>NGOs Colony, Vanasthalipuram</p>
+            <p>Hyderabad 500070, Telangana</p>
+            <p className="footer-visit-phone">+91 6281755830</p>
           </div>
 
           <h4 className="footer-title footer-contact-title">Contact</h4>
@@ -93,8 +110,9 @@ export default function Footer({ onNavigate }) {
               onChange={(e) => setForm({ ...form, message: e.target.value })}
               required
             />
-            <button type="submit" className="footer-contact-submit">
-              Send Message <ArrowRight size={15} />
+            {error && <p className="auth-error-text">{error}</p>}
+            <button type="submit" className="footer-contact-submit" disabled={submitting}>
+              {submitting ? 'Sending...' : 'Send Message'} <ArrowRight size={15} />
             </button>
           </form>
 

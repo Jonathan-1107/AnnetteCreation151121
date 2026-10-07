@@ -1,0 +1,238 @@
+/* ==========================================================================
+   ANNETTE PURE - "Standard store" theme (Shopify / Hostinger style)
+   Load AFTER index.css. Removes gradients, blur, glow, serif/script fonts,
+   heavy shadows, big radii and hover-lift animations.
+
+   CHANGE YOUR BRAND COLOUR HERE (one place):
+   ========================================================================== */
+:root {
+  --brand: #0B1C36;              /* buttons, links, accents - change me */
+
+  /* Neutral palette */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-card: #ffffff;
+  --white: #ffffff;
+  --text-main: #121212;
+  --text-muted: #5f5f5f;
+  --text-light: #8a8a8a;
+  --border-color: #e5e5e5;
+  --border-subtle: #eeeeee;
+
+  /* The old gold/navy accents now all point to ONE brand colour */
+  --accent-dark: var(--brand);
+  --accent-gold: var(--brand);
+  --accent-gold-dark: #000000;
+  --accent-gold-light: #f2f2f2;
+  --accent-light: #eeeeee;
+
+  --btn-bg: var(--brand);
+  --btn-hover: #000000;
+
+  /* One font family everywhere */
+  --font-body: 'Assistant', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: var(--font-body);
+  --font-script: var(--font-body);
+
+  /* Flat look */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);   /* only drawers/modals */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --transition-smooth: all 0.2s ease;
+  --transition-fast: all 0.15s ease;
+  --header-height: 72px;
+}
+
+/* ---------- Global: no blur, glow or text shadows ---------- */
+*, *::before, *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-shadow: none !important;
+}
+
+body { font-family: var(--font-body); background: var(--bg-primary); }
+
+/* ---------- Typography ---------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.section { padding: 64px 5%; }
+.section-title {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 600;
+  font-size: 1.9rem;
+}
+.section-title::after { display: none; }          /* gold underline bar */
+
+/* Tiny gold "eyebrow" labels above headings: hidden (remove from JSX later) */
+.section-eyebrow, .feature-eyebrow, .story-eyebrow, .milestone-eyebrow,
+.seasonal-eyebrow, .video-eyebrow, .shop-banner-eyebrow { display: none; }
+
+/* Remaining uppercase + wide spacing -> normal sentence case */
+.nav-link-btn, .dropdown-link, .filter-group-title, .sort-label,
+.form-group label, .step-tag, .footer-title, .mobile-nav-link,
+.top-picks-category, .top-picks-spec, .product-collection-label,
+.hero-title, .category-name, .logo-wordmark, .press-outlet-title,
+.footer-brand-title, .checkout-brand-text, .step-bubble-btn {
+  text-transform: none;
+  letter-spacing: normal;
+}
+.hero-title { font-weight: 700; font-size: clamp(2.2rem, 5vw, 3.8rem); line-height: 1.1; }
+.hero-tagline { font-style: normal; font-weight: 400; }
+.nav-link-btn { font-size: 0.95rem; font-weight: 500; color: var(--text-main); }
+.dropdown-link { font-size: 0.9rem; }
+.logo-wordmark { font-weight: 700; font-size: 1.3rem; }
+.logo-submark { display: none; }
+.logo-script-accent { font-family: var(--font-body); font-weight: 700; font-size: 1.8rem; filter: none; }
+
+/* ---------- Announcement bar: solid, quiet ---------- */
+.announcement-bar {
+  background: var(--brand);
+  color: #fff;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 0.8rem;
+  border-bottom: none;
+}
+
+/* ---------- Header: plain white bar ---------- */
+.main-header,
+.main-header.scrolled {
+  background: #fff;
+  height: 72px;
+  box-shadow: none;
+  border-bottom: 1px solid var(--border-color);
+}
+.header-burger-btn, .mobile-menu-btn {
+  border: none; background: transparent; border-radius: 4px;
+}
+.header-burger-btn:hover, .mobile-menu-btn:hover,
+.icon-btn:hover { background: var(--bg-secondary); transform: none; box-shadow: none; }
+.header-brand-divider { background: var(--border-color); }
+.icon-badge { background: var(--brand); box-shadow: none; border: none; }
+.header-shop-btn {
+  background: var(--brand); border: 1px solid var(--brand); border-radius: var(--radius-sm);
+  text-transform: none; letter-spacing: 0.02em; font-size: 0.85rem; box-shadow: none;
+}
+.header-shop-btn:hover { background: #000; border-color: #000; color: #fff; transform: none; box-shadow: none; }
+.nav-dropdown, .nav-nested-dropdown {
+  background: #fff; border: 1px solid var(--border-color); box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.dropdown-link:hover { padding-left: 20px; background: var(--bg-secondary); }
+.dropdown-link-badge { border-radius: 2px; }
+
+/* ---------- Buttons: solid, small radius, no lift ---------- */
+.btn-luxury-cta, .btn-luxury-outline, .btn-luxe, .pdp-buynow-btn {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 13px 28px;
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+}
+.btn-luxury-cta:hover, .btn-luxury-outline:hover, .btn-luxe:hover,
+.btn-luxe.btn-solid:hover, .pdp-buynow-btn:hover {
+  transform: none; box-shadow: none;
+}
+.hero-btn-secondary, .category-btn { background: transparent; }
+
+/* ---------- Hero & image overlays: flat, no gradients ---------- */
+.hero-section { min-height: 70vh; }
+.hero-overlay { background: rgba(0, 0, 0, 0.35); }
+.hero-eyebrow {
+  background: none; border: none; padding: 0; border-radius: 0;
+  text-transform: none; letter-spacing: 0.02em; font-size: 0.95rem; color: #fff;
+}
+.category-overlay, .promo-tile-overlay, .featured-blog-overlay { background: rgba(0, 0, 0, 0.3); }
+.seasonal-overlay { background: rgba(0, 0, 0, 0.4); }
+.brand-video-overlay, .shop-banner-overlay { background: rgba(0, 0, 0, 0.4); }
+.video-play-btn { background: rgba(255,255,255,0.25); }
+
+/* ---------- Cards: flat, thin line, no hover lift/zoom ---------- */
+.category-card, .product-card, .blog-card, .event-process-step,
+.event-offering-card, .story-card, .testimonial-card, .service-card,
+.pl-step-card, .pillar-card, .stockist-card, .timeline-content,
+.search-result-card, .review-card, .press-quote-card, .podcast-card {
+  box-shadow: none;
+}
+.category-card:hover, .product-card:hover, .blog-card:hover,
+.event-process-step:hover, .event-offering-card:hover,
+.search-result-card:hover { transform: none; box-shadow: none; }
+.category-card:hover .category-img, .promo-tile:hover .promo-tile-bg,
+.product-card:hover .product-img { transform: none; }
+
+/* Product card: image, title, price (Shopify "Dawn" style) */
+.product-card {
+  flex: 0 0 260px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+.product-img-wrapper { height: auto; aspect-ratio: 1 / 1; border-radius: var(--radius-sm); }
+.product-info { padding: 12px 0 0; }
+.product-title { font-size: 0.95rem; font-weight: 500; }
+.product-title:hover { text-decoration: underline; color: var(--text-main); }
+.product-price { font-size: 1rem; font-weight: 600; }
+.product-collection-label { color: var(--text-light); font-weight: 400; font-size: 0.78rem; }
+.product-badge { border-radius: 2px; letter-spacing: 0.04em; }
+.card-wishlist-btn { background: #fff; }
+.product-card-hover-actions { background: #fff; }
+.products-display-grid.grid-layout {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+/* ---------- Shop sidebar & promo ---------- */
+.sidebar-promo-card { background: var(--bg-secondary); border: none; }
+.sidebar-promo-badge { border-radius: 2px; }
+.filter-pill { border-radius: 2px; }
+
+/* ---------- Product page ---------- */
+.pdp-main-image-wrap { box-shadow: none; }
+.pdp-tagline { font-family: var(--font-body); font-size: 1rem; color: var(--text-muted); }
+.pdp-purchase-card.selected { background: var(--bg-secondary); border-color: var(--brand); }
+.accordion-header-btn { font-family: var(--font-body); font-size: 1rem; font-weight: 600; letter-spacing: normal; }
+.faq-question-btn { font-family: var(--font-body); font-size: 1rem; font-weight: 600; letter-spacing: normal; }
+
+/* ---------- Footer & misc ---------- */
+.main-footer, .question-footer { background: var(--bg-secondary); }
+.footer-title { font-size: 1rem; font-weight: 600; }
+.footer-script-a { font-family: var(--font-body); font-weight: 700; }
+.social-icon-btn:hover { transform: none; }
+
+/* ---------- Checkout card preview: flat colour instead of gradient ---------- */
+.live-card-preview { background: #121212; box-shadow: none; }
+.card-chip { background: #bdbdbd; }
+
+/* ---------- Drawers / modals: keep a soft shadow, drop the blur ---------- */
+.overlay-backdrop, .modal-wrapper, .mobile-drawer-menu, .video-modal-overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+.drawer-panel { box-shadow: var(--shadow-lg); }
+.cart-drawer-footer { box-shadow: none; }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 768px) {
+  .section { padding: 40px 20px; }
+  .section-title { font-size: 1.5rem; }
+  .product-card { flex-basis: 200px; }
+}
+.tray-slot { height: auto; min-height: 200px; justify-content: flex-start; overflow: hidden; padding: 16px 12px; }
+.slot-img { flex-shrink: 0; }
+.slot-title, .slot-vibe, .pick-title, .pick-desc {
+  display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3;
+}
+.slot-title { -webkit-line-clamp: 3; font-size: 0.85rem; }
+.slot-vibe { -webkit-line-clamp: 1; }
+.pick-title { -webkit-line-clamp: 2; }
+.pick-desc { -webkit-line-clamp: 3; }

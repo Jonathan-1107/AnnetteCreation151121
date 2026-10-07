@@ -22,8 +22,7 @@ export default function BoutiquePage({ onNavigate }) {
   };
 
   const stockists = [
-    { city: "Mumbai, Maharashtra", name: "Annette Pure Flagship Atelier", address: "14 Altamount Road & Bandra Studio", phone: "+91 98200 12345", type: "Flagship Atelier" },
-    { city: "Bengaluru, Karnataka", name: "Annette Pure Experiential Studio", address: "100ft Road, Indiranagar", phone: "+91 80 4123 4567", type: "Flagship Studio" },
+    { city: "Hyderabad, Telangana", name: "Annette Pure Flagship Atelier", address: "NGOs Colony, Vanasthalipuram", phone: "+91 6281755830", type: "Flagship Atelier" },
     { city: "New Delhi, NCR", name: "Maison Lux Living", address: "The Kila, Seven Style Mile, Mehrauli", phone: "+91 11 4987 6543", type: "Stockist" },
     { city: "Hyderabad, Telangana", name: "Sanctuary Botanica", address: "Road No. 36, Jubilee Hills", phone: "+91 40 2345 6789", type: "Stockist" },
     { city: "Goa", name: "The Coastal Heritage Pavilion", address: "Badem Junction, Assagao", phone: "+91 832 245 6789", type: "Stockist" },
@@ -32,9 +31,9 @@ export default function BoutiquePage({ onNavigate }) {
 
   return (
     <div className="boutique-page">
-      
+
       {/* Hero Section */}
-      <section 
+      <section
         className="boutique-hero"
         style={{ backgroundImage: `url(${boutiqueImg})` }}
       >
@@ -43,7 +42,7 @@ export default function BoutiquePage({ onNavigate }) {
           <span className="boutique-eyebrow">Flagship Experiential Studios</span>
           <h1 className="boutique-title">The Atelier Experience</h1>
           <p className="boutique-tagline">
-            Step into our sunlit experiential studios in Mumbai and Bengaluru. Discover rare fragrance accords, explore our sustainable vessel refill bar, and book a personalized scent consultation.
+            Step into our sunlit experiential studio in Hyderabad. Discover rare fragrance accords, explore our sustainable vessel refill bar, and book a personalized scent consultation.
           </p>
           <a href="#book-appointment" className="btn-luxury-cta">
             Book Scent Consultation &rarr;
@@ -57,7 +56,7 @@ export default function BoutiquePage({ onNavigate }) {
           <MapPin size={22} className="strip-icon" />
           <div className="strip-content">
             <h4>Flagship Atelier</h4>
-            <p>14 Altamount Road, South Mumbai &bull; Indiranagar, Bengaluru</p>
+            <p>NGOs Colony, Vanasthalipuram, Hyderabad 500070, Telangana</p>
             <span className="strip-sub">Walk-ins welcome &bull; Private appointments available</span>
           </div>
         </div>
@@ -75,8 +74,8 @@ export default function BoutiquePage({ onNavigate }) {
           <Phone size={22} className="strip-icon" />
           <div className="strip-content">
             <h4>Atelier Concierge</h4>
-            <p>+91 98200 12345 / 1800-266-8730</p>
-            <span className="strip-sub">concierge@annettepure.in</span>
+            <p>+91 6281755830</p>
+            <span className="strip-sub">info@annettepure.com</span>
           </div>
         </div>
       </div>
@@ -89,7 +88,7 @@ export default function BoutiquePage({ onNavigate }) {
         </div>
 
         <div className="boutique-services-grid">
-          
+
           <div className="service-card">
             <div className="service-icon-wrap">
               <Sparkles size={24} />
@@ -129,7 +128,7 @@ export default function BoutiquePage({ onNavigate }) {
       {/* Appointment Booking Scheduler Form */}
       <section className="section appointment-section" id="book-appointment">
         <div className="appointment-card-container">
-          
+
           <div className="appointment-header">
             <span className="section-eyebrow">Personalized Attention</span>
             <h2 className="section-title">Schedule an Atelier Visit</h2>
@@ -146,7 +145,7 @@ export default function BoutiquePage({ onNavigate }) {
               <h3>Appointment Reserved, {bookingData.name}!</h3>
               <p>We look forward to welcoming you to our studio on <strong>{bookingData.date || 'your selected date'}</strong> at <strong>{bookingData.time}</strong> for <strong>{bookingData.service}</strong>.</p>
               <p>A confirmation email and directions have been dispatched to <strong>{bookingData.email}</strong>.</p>
-              <button 
+              <button
                 className="btn-luxury-cta"
                 onClick={() => setBookingSubmitted(false)}
               >
@@ -155,7 +154,7 @@ export default function BoutiquePage({ onNavigate }) {
             </div>
           ) : (
             <form onSubmit={handleBookingSubmit} className="appointment-form">
-              
+
               <div className="form-grid-2">
                 <div className="form-group">
                   <label>Full Name *</label>
