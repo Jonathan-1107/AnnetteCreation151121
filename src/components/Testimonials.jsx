@@ -6,9 +6,9 @@ export default function Testimonials() {
 
   const reviews = [
     {
-      name: "Verified Patron • South Mumbai",
+      name: "Hotel Supervisor • South Mumbai",
       stars: 5,
-      quote: "Forest Ave. fills my large living room with a rich Himalayan woodsy scent without being overwhelming. Best soy candle I've ever owned in India."
+      quote: "Vanilla . fills my large living room with warm, sweet, creamy, and comforting scent without being overwhelming. Best soy candle I've ever owned in India."
     },
     {
       name: "Aromatherapy Collector • Bengaluru",
@@ -21,14 +21,14 @@ export default function Testimonials() {
       quote: "Ordered custom bespoke gifts through their Private Label atelier. The client feedback was extraordinary. Exceptional quality, natural wax, and packaging."
     },
     {
-      name: "Verified Buyer • New Delhi",
+      name: "Spa & Meditation • New Delhi",
       stars: 5,
       quote: "Cleanest burning candle ever. I have sensitive allergies, and ANNETTE PURE candles never trigger them. Pure botanical essential oils make all the difference."
     },
     {
       name: "Interior Stylist • Hyderabad",
       stars: 5,
-      quote: "Layne is the most uplifting coastal fragrance. The jasmine and white tea notes smell incredibly natural, never synthetic."
+      quote: "Sweet Dreams is the most uplifting floral fragrance. The cinnamon and lavender notes smell incredibly natural, never synthetic."
     },
     {
       name: "Verified Collector • Pune",

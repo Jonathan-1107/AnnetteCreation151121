@@ -172,7 +172,6 @@ const handleNavigate = (page, params = {}) => {
         currentPage={currentPage}
         currentCategory={navParams.category} 
         onNavigate={handleNavigate}
-        currentCategory={navParams.category}
         user={user}
       />
 

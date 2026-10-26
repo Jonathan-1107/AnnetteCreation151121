@@ -2,10 +2,10 @@ import React from 'react';
 
 export default function AnnouncementBar() {
   const announcements = [
-    "Complimentary Express Delivery Across India on Orders ₹1,499+",
+    "Express Delivery Across India on Orders",
     "100% Non-Toxic Promise — Pure Organic Soy Wax & Lead-Free Wicks",
-    "Special Offer: Discovery Scent Flight Includes ₹500 Full-Size Candle Voucher",
-    "Handcrafted in Small Batches • India Flagship Atelier"
+    "Transform Your Space: The Power of Pure Essential Oils in Every Burn",
+    "Handcrafted in Small Batches • India Artisanal workshop"
   ];
 
   return (

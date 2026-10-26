@@ -319,11 +319,17 @@ export default function ProductDetailPage({
               </button>
               {activeAccordion === 'notes' && (
                 <div className="accordion-body-content">
-                  <p>{currentProduct.description}</p>
-                  <p><strong>Fragrance Family:</strong> {currentProduct.scentFamily}</p>
-                  <p><strong>Recommended Placement:</strong> {currentProduct.specs?.roomPlacement || 'Living Room, Study, Bedroom'}</p>
-                  <p><strong>Atmospheric Mood:</strong> {currentProduct.specs?.mood || 'Calming, Grounding, Luxurious'}</p>
-                </div>
+  <p>{currentProduct.description}</p>
+  {currentProduct.scentFamily && (
+    <p><strong>Fragrance Family:</strong> {currentProduct.scentFamily}</p>
+  )}
+  {currentProduct.specs?.roomPlacement && (
+    <p><strong>Recommended Placement:</strong> {currentProduct.specs.roomPlacement}</p>
+  )}
+  {currentProduct.specs?.mood && (
+    <p><strong>Atmospheric Mood:</strong> {currentProduct.specs.mood}</p>
+  )}
+</div>
               )}
             </div>
 
