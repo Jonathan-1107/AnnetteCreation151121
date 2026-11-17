@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, User, ShoppingBag, Heart, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { useCatalogNav } from '../hooks/useCatalogNav';
+import { useCurrency, SWITCHER_CURRENCIES } from '../hooks/useCurrency.jsx';
 import logoFloralIcon from '../assets/logo-floral.png';
 
 export default function Header({ 
@@ -18,6 +19,7 @@ export default function Header({
   const [mobileExpandedNested, setMobileExpandedNested] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const { navDepartments } = useCatalogNav();
+  const { currency, switchCurrency } = useCurrency();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -190,6 +192,20 @@ export default function Header({
         </nav>
 
         <div className="header-actions">
+                    {/* Currency Selector */}
+          <div className="currency-selector-wrap">
+            <select
+              className="currency-selector"
+              value={currency.code}
+              onChange={(e) => switchCurrency(e.target.value)}
+              aria-label="Select currency"
+              title="Change currency"
+            >
+              {SWITCHER_CURRENCIES.map((c) => (
+                <option key={c.code} value={c.code}>{c.label}</option>
+              ))}
+            </select>
+          </div>
           <div className="header-icons">
             <button 
               className="icon-btn" 

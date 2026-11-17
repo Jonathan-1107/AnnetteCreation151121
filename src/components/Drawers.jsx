@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { X, Plus, Minus, Trash2, ShoppingBag, Star, ArrowRight, Gift, Truck } from 'lucide-react';
 import { PRODUCTS } from '../data/products';
+import PriceDisplay from './PriceDisplay';
+import { useCurrency } from '../hooks/useCurrency.jsx';
 
 // 1. LUXURY CART DRAWER WITH FREE SHIPPING METER & CHECKOUT LINK
 export function CartDrawer({ 
@@ -17,8 +19,13 @@ export function CartDrawer({
   const [giftNoteOpen, setGiftNoteOpen] = useState(false);
   const [giftNote, setGiftNote] = useState('');
 
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const FREE_SHIPPING_THRESHOLD = 1499.00;
+  const { convertPrice, formatPrice } = useCurrency();
+
+  const subtotal = cartItems.reduce((acc, item) => {
+    const unitPrice = convertPrice(item.price, item.priceEur) ?? item.price;
+    return acc + (unitPrice * item.quantity);
+  }, 0);
+  const FREE_SHIPPING_THRESHOLD = convertPrice(1499.00, 20.00) ?? 1499.00;
   const amountNeededForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
   const freeShippingProgress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
 
@@ -80,9 +87,9 @@ export function CartDrawer({
           <div className="shipping-meter-text">
             <Truck size={14} className="shipping-meter-icon" />
             {amountNeededForFreeShipping === 0 ? (
-              <span className="shipping-success"><strong>You have unlocked FREE Pan-India Shipping!</strong></span>
+              <span className="shipping-success"><strong>You have unlocked FREE Shipping!</strong></span>
             ) : (
-              <span>Add <strong>₹{Math.round(amountNeededForFreeShipping).toLocaleString('en-IN')}</strong> more for <strong>FREE Pan-India Shipping</strong></span>
+              <span>Add <strong>{formatPrice(amountNeededForFreeShipping)}</strong> more for <strong>FREE Shipping</strong></span>
             )}
           </div>
           <div className="shipping-progress-track">
@@ -128,7 +135,9 @@ export function CartDrawer({
                       >
                         {item.title}
                       </h4>
-                      <p className="cart-item-price">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
+                      <p className="cart-item-price">
+                        {formatPrice((convertPrice(item.price, item.priceEur) ?? item.price) * item.quantity)}
+                      </p>
                     </div>
                     
                     <span className="cart-item-unit">100% Organic Soy &bull; 11 oz</span>
@@ -215,27 +224,27 @@ export function CartDrawer({
             <div className="cart-totals-section">
               <div className="cart-totals-row">
                 <span>Subtotal</span>
-                <span>₹{subtotal.toLocaleString('en-IN')}</span>
+                <span>{formatPrice(subtotal)}</span>
               </div>
               {discountPercent > 0 && (
                 <div className="cart-totals-row discount-row">
                   <span>VIP Discount ({discountPercent}%)</span>
-                  <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
+                  <span>-{formatPrice(discountAmount)}</span>
                 </div>
               )}
               <div className="cart-totals-row final-total-row">
                 <span>Estimated Total</span>
-                <span className="final-total-amount">₹{Math.round(finalTotal).toLocaleString('en-IN')}</span>
+                <span className="final-total-amount">{formatPrice(finalTotal)}</span>
               </div>
             </div>
 
-            <p className="cart-totals-desc">Taxes and final Pan-India shipping calculated at checkout.</p>
+            <p className="cart-totals-desc">Taxes and shipping calculated at checkout.</p>
             
             <button 
               className="btn-luxe btn-solid cart-checkout-btn" 
               onClick={handleProceedToCheckout}
             >
-              <span>Proceed to Checkout &bull; ₹{Math.round(finalTotal).toLocaleString('en-IN')}</span>
+              <span>Proceed to Checkout &bull; {formatPrice(finalTotal)}</span>
               <ArrowRight size={16} />
             </button>
 
@@ -351,7 +360,9 @@ export function SearchDrawer({ isOpen, onClose, onNavigate }) {
                         <span className="search-result-category">{p.category}</span>
                         <h4 className="search-result-title">{p.title}</h4>
                         <span className="search-result-scent">{p.scentFamily}</span>
-                        <span className="search-result-price">₹{p.price.toLocaleString('en-IN')}</span>
+                        <span className="search-result-price">
+                          <PriceDisplay priceInr={p.price} priceEur={p.priceEur} />
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -370,6 +381,7 @@ export function SearchDrawer({ isOpen, onClose, onNavigate }) {
 export function QuickViewModal({ product, isOpen, onClose, onAddToCart, onNavigate }) {
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const { convertPrice, formatPrice } = useCurrency();
 
   if (!product) return null;
 
@@ -434,10 +446,12 @@ export function QuickViewModal({ product, isOpen, onClose, onAddToCart, onNaviga
               </div>
 
               <div className="qv-price-row">
-                <span className="qv-price">₹{product.price.toLocaleString('en-IN')}</span>
-                {product.comparePrice && (
-                  <span className="qv-price-compare">₹{product.comparePrice.toLocaleString('en-IN')}</span>
-                )}
+                <PriceDisplay
+                  priceInr={product.price}
+                  priceEur={product.priceEur}
+                  comparePriceInr={product.comparePrice}
+                  comparePriceEur={product.comparePriceEur}
+                />
                 <span className="qv-in-stock-badge">In Stock &bull; Hand-Poured in India</span>
               </div>
 
@@ -487,7 +501,7 @@ export function QuickViewModal({ product, isOpen, onClose, onAddToCart, onNaviga
                 </div>
                 
                 <button className="btn-luxe btn-solid qv-add-btn" onClick={handleAdd}>
-                  Add to Scent Bag &bull; ₹{(product.price * quantity).toLocaleString('en-IN')}
+                  Add to Scent Bag &bull; {formatPrice((convertPrice(product.price, product.priceEur) ?? product.price) * quantity)}
                 </button>
               </div>
 

@@ -236,3 +236,65 @@ h1, h2, h3, h4, h5, h6 {
 .slot-vibe { -webkit-line-clamp: 1; }
 .pick-title { -webkit-line-clamp: 2; }
 .pick-desc { -webkit-line-clamp: 3; }
+
+
+/* ============================================================
+   CURRENCY SELECTOR — Header dropdown
+   ============================================================ */
+.currency-selector-wrap {
+  display: flex;
+  align-items: center;
+  margin-right: 6px;
+}
+
+.currency-selector {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+  padding: 4px 24px 4px 8px;
+  font-size: 11px;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  color: var(--color-text-primary, #1a1a1a);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+  /* Tiny chevron arrow via background SVG */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+  min-width: 72px;
+  max-width: 90px;
+}
+
+.currency-selector:hover,
+.currency-selector:focus {
+  border-color: rgba(0, 0, 0, 0.45);
+}
+
+/* On scrolled/dark header */
+.main-header.scrolled .currency-selector {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: inherit;
+}
+
+/* Price display helpers */
+.price-display {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.price-compare {
+  text-decoration: line-through;
+  opacity: 0.5;
+  font-size: 0.85em;
+}
+
+.price-unavailable {
+  font-size: 0.8em;
+  opacity: 0.55;
+  font-style: italic;
+}

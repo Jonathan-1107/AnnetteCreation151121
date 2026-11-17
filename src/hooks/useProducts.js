@@ -10,20 +10,22 @@ export function useProducts() {
       const { data, error } = await supabase
         .from('products')
         .select(`
-          id, name, slug, description, tagline, base_price, seller_sku,
-          is_bestseller, is_top_pick, scent_family, burn_time,
-          wax_type, wick, net_weight, vessel, rating, review_count,
-          image_url,
+          id, name, slug, description, tagline,
+          base_price, price_eur, compare_price_eur,
+          seller_sku, is_bestseller, is_top_pick,
+          scent_family, burn_time, wax_type, wick,
+          net_weight, vessel, rating, review_count, image_url,
           categories ( name, collections ( name ) ),
           product_images ( image_url, display_order )
         `)
+
       if (error) {
-        console.error(error)
+        console.error('useProducts error:', error)
         setLoading(false)
         return
       }
 
-            const shaped = data.map((p) => {
+      const shaped = data.map((p) => {
         const galleryImages = (p.product_images || [])
           .sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
           .map((img) => img.image_url)
@@ -32,14 +34,21 @@ export function useProducts() {
         const images = [p.image_url, ...galleryImages].filter(Boolean)
 
         return {
-
           id: p.id,
           sku: p.seller_sku || '',
           title: p.name,
           slug: p.slug || String(p.id),
           category: p.categories?.name || '',
           collection: p.categories?.collections?.name || '',
+
+          // INR price — from Supabase base_price (used for Indian users)
           price: p.base_price || 0,
+
+          // EUR price — manually set in Supabase, independent of INR
+          // Used directly for EU users, converted for all other regions
+          priceEur: p.price_eur ?? null,
+          comparePriceEur: p.compare_price_eur ?? null,
+
           comparePrice: null,
           rating: p.rating || 5,
           reviewCount: p.review_count || 0,

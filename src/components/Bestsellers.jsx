@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight, Star, ShoppingBag, Eye } from 'lucide-react';
 import { useProducts } from '../hooks/useProducts';
+import PriceDisplay from './PriceDisplay';
 
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 
@@ -105,10 +106,12 @@ export default function Bestsellers({ onQuickView, onAddToCart, onNavigate }) {
                 </div>
 
                 <div className="product-price-row">
-                  <span className="product-price">₹{product.price.toLocaleString('en-IN')}</span>
-                  {product.comparePrice && (
-                    <span className="product-price-compare">₹{product.comparePrice.toLocaleString('en-IN')}</span>
-                  )}
+                  <PriceDisplay
+                    priceInr={product.price}
+                    priceEur={product.priceEur}
+                    comparePriceInr={product.comparePrice}
+                    comparePriceEur={product.comparePriceEur}
+                  />
                 </div>
                 
                 <span className="product-unit-price">100% Soy Wax &bull; 100% Fragrance Essential Oil</span>

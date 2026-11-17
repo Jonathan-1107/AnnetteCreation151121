@@ -3,6 +3,8 @@ import { Grid, List, Star, Eye, ShoppingBag, Heart, Search, X, Check } from 'luc
 import { useProducts } from '../hooks/useProducts';
 import { useCollections } from '../hooks/useCollections';
 import { COLLECTION_GROUPS } from '../data/collectionGroups';
+import PriceDisplay from '../components/PriceDisplay';
+import { useCurrency } from '../hooks/useCurrency.jsx';
 
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 const ALL = 'All Candles';
@@ -57,6 +59,7 @@ export default function ShopPage({
   const [priceFilter, setPriceFilter] = useState('all');
   const { products, loading } = useProducts();
   const { collections } = useCollections();
+  const { convertPrice, formatPrice } = useCurrency();
 
   // Sidebar options. If we arrived from a menu item that is not a collection
   // (e.g. a department), still show it as the active option.
@@ -404,18 +407,18 @@ export default function ShopPage({
                         {product.tagline && <p className="product-card-tagline">{product.tagline}</p>}
 
                         <div className="product-price-row">
-                          <span className="product-price">₹{product.price.toLocaleString('en-IN')}</span>
-                          {product.comparePrice && (
-                            <span className="product-price-compare">
-                              ₹{product.comparePrice.toLocaleString('en-IN')}
-                            </span>
-                          )}
+                          <PriceDisplay
+                            priceInr={product.price}
+                            priceEur={product.priceEur}
+                            comparePriceInr={product.comparePrice}
+                            comparePriceEur={product.comparePriceEur}
+                          />
                         </div>
 
                         {viewMode === 'list' && (
                           <div className="list-mode-actions">
                             <button className="btn-luxe btn-solid" onClick={() => onAddToCart && onAddToCart(product, 1)}>
-                              Add to Bag &bull; ₹{product.price.toLocaleString('en-IN')}
+                              Add to Bag &bull; {formatPrice(convertPrice(product.price, product.priceEur))}
                             </button>
                             <button className="btn-luxe" onClick={() => handleProductClick(product)}>
                               View details &rarr;

@@ -109,6 +109,7 @@ const handleNavigate = (page, params = {}) => {
         sku: product.sku,
         title: product.title,
         price: product.price,
+        priceEur: product.priceEur,
         image: product.image,
         quantity
       }

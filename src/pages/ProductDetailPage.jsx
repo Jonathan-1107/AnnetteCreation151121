@@ -4,6 +4,8 @@ import {
   ChevronDown, ChevronUp, Plus, Minus, Check, Sparkles, MessageSquare 
 } from 'lucide-react';
 import { useProducts } from '../hooks/useProducts';
+import PriceDisplay from '../components/PriceDisplay';
+import { useCurrency } from '../hooks/useCurrency.jsx';
 
 export default function ProductDetailPage({ 
   product, 
@@ -58,6 +60,13 @@ export default function ProductDetailPage({
   const discountPrice = purchaseType === 'subscription' 
     ? (currentProduct.price * 0.9) 
     : currentProduct.price;
+
+  // EUR equivalent of discountPrice (independent of INR, manually set in Supabase)
+  const discountPriceEur = currentProduct.priceEur != null
+    ? (purchaseType === 'subscription' ? +(currentProduct.priceEur * 0.9).toFixed(2) : currentProduct.priceEur)
+    : null;
+
+  const { convertPrice, formatPrice } = useCurrency();
 
   const handleAddToCart = () => {
     const itemToAdd = {
@@ -212,10 +221,12 @@ export default function ProductDetailPage({
 
           {/* Pricing */}
           <div className="pdp-price-row">
-            <span className="pdp-price">₹{discountPrice.toLocaleString('en-IN')}</span>
-            {currentProduct.comparePrice && purchaseType === 'onetime' && (
-              <span className="pdp-compare-price">₹{currentProduct.comparePrice.toLocaleString('en-IN')}</span>
-            )}
+            <PriceDisplay
+              priceInr={discountPrice}
+              priceEur={discountPriceEur}
+              comparePriceInr={purchaseType === 'onetime' ? currentProduct.comparePrice : null}
+              comparePriceEur={purchaseType === 'onetime' ? currentProduct.comparePriceEur : null}
+            />
             {purchaseType === 'subscription' && (
               <span className="pdp-sub-savings-badge">Save 10% with Auto-Delivery</span>
             )}
@@ -277,7 +288,7 @@ export default function ProductDetailPage({
               onClick={handleAddToCart}
             >
               <ShoppingBag size={18} />
-              <span>Add to Scent Bag &bull; ₹{Math.round(discountPrice * quantity).toLocaleString('en-IN')}</span>
+              <span>Add to Scent Bag &bull; {formatPrice((convertPrice(discountPrice, discountPriceEur) ?? discountPrice) * quantity)}</span>
             </button>
           </div>
 
@@ -510,7 +521,7 @@ export default function ProductDetailPage({
               <div className="product-info">
                 <span className="product-collection-label">{p.category}</span>
                 <h3 className="product-title">{p.title}</h3>
-                <span className="product-price">₹{p.price.toLocaleString('en-IN')}</span>
+                <span className="product-price"><PriceDisplay priceInr={p.price} priceEur={p.priceEur} /></span>
               </div>
             </div>
           ))}

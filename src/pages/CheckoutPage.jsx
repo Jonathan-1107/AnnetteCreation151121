@@ -4,6 +4,7 @@ import {
   ShoppingBag, Sparkles, CheckCircle, Smartphone, Building2, Banknote 
 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
+import { useCurrency } from '../hooks/useCurrency.jsx';
 
 const INDIAN_STATES = [
   "Andhra Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh", "Delhi",
@@ -21,6 +22,7 @@ export default function CheckoutPage({
   onAddOrder,
   user 
 }) {
+  const { currency, convertPrice, formatPrice } = useCurrency();
   const [currentStep, setCurrentStep] = useState(1); // 1: Address, 2: Shipping, 3: Payment, 4: Confirmation
   
   // Form State
@@ -63,13 +65,21 @@ export default function CheckoutPage({
   const [orderError, setOrderError] = useState('');
 
   // Totals calculations
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const isFreeStandard = subtotal >= 1499;
+  const subtotal = cartItems.reduce((acc, item) => {
+    const unitPrice = convertPrice(item.price, item.priceEur) ?? item.price;
+    return acc + (unitPrice * item.quantity);
+  }, 0);
+  const FREE_SHIPPING_THRESHOLD = convertPrice(1499.00, 20.00) ?? 1499.00;
+  const isFreeStandard = subtotal >= FREE_SHIPPING_THRESHOLD;
   
+  const standardFee = convertPrice(99, 3) ?? 99;
+  const expressFee = convertPrice(199, 6) ?? 199;
+  const whitegloveFee = convertPrice(399, 12) ?? 399;
+
   let shippingCost = 0;
-  if (shippingMethod === 'standard') shippingCost = isFreeStandard ? 0 : 99;
-  if (shippingMethod === 'express') shippingCost = 199;
-  if (shippingMethod === 'whiteglove') shippingCost = 399;
+  if (shippingMethod === 'standard') shippingCost = isFreeStandard ? 0 : standardFee;
+  if (shippingMethod === 'express') shippingCost = expressFee;
+  if (shippingMethod === 'whiteglove') shippingCost = whitegloveFee;
 
   const discountAmount = (subtotal * discountPercent) / 100;
   const grandTotal = Math.max(0, subtotal - discountAmount + shippingCost);
@@ -336,9 +346,9 @@ export default function CheckoutPage({
     <div className="receipt-item-meta">
       <h4 style={{ margin: '0 0 4px 0' }}>{it.title}</h4>
       {it.sku && <span style={{ display: 'block', fontSize: '0.75rem', color: '#8A8478' }}>SKU: {it.sku}</span>}
-      <span>Qty: {it.quantity} &bull; ₹{it.price.toLocaleString('en-IN')} each</span>
+      <span>Qty: {it.quantity} &bull; {formatPrice(convertPrice(it.price, it.priceEur) ?? it.price)} each</span>
     </div>
-    <span className="receipt-item-price">₹{(it.price * it.quantity).toLocaleString('en-IN')}</span>
+    <span className="receipt-item-price">{formatPrice((convertPrice(it.price, it.priceEur) ?? it.price) * it.quantity)}</span>
   </div>
 ))}
             </div>
@@ -346,25 +356,25 @@ export default function CheckoutPage({
             <div className="receipt-totals-table">
               <div className="receipt-row">
                 <span>Subtotal</span>
-                <span>₹{confirmedOrder.subtotal.toLocaleString('en-IN')}</span>
+                <span>{formatPrice(confirmedOrder.subtotal)}</span>
               </div>
               {confirmedOrder.discountAmount > 0 && (
                 <div className="receipt-row discount">
                   <span>Discount Applied</span>
-                  <span>-₹{confirmedOrder.discountAmount.toLocaleString('en-IN')}</span>
+                  <span>-{formatPrice(confirmedOrder.discountAmount)}</span>
                 </div>
               )}
               <div className="receipt-row">
                 <span>Shipping ({confirmedOrder.shippingMethodTitle})</span>
-                <span>{confirmedOrder.shippingCost === 0 ? 'FREE' : `₹${confirmedOrder.shippingCost}`}</span>
+                <span>{confirmedOrder.shippingCost === 0 ? 'FREE' : formatPrice(confirmedOrder.shippingCost)}</span>
               </div>
               <div className="receipt-row">
                 <span>GST (Included)</span>
-                <span>₹0.00 (All Inclusive)</span>
+                <span>{formatPrice(0)} (All Inclusive)</span>
               </div>
               <div className="receipt-row total-row">
                 <span>Total Paid</span>
-                <span>₹{Math.round(confirmedOrder.total).toLocaleString('en-IN')}</span>
+                <span>{formatPrice(confirmedOrder.total)}</span>
               </div>
             </div>
 
@@ -477,21 +487,21 @@ export default function CheckoutPage({
                 <div className={`shipping-option-card ${shippingMethod === 'standard' ? 'selected' : ''}`} onClick={() => setShippingMethod('standard')}>
                   <div className="shipping-radio"><div className={`radio-dot ${shippingMethod === 'standard' ? 'active' : ''}`} /></div>
                   <div className="shipping-details">
-                    <div className="shipping-title-row"><strong>Standard Pan-India Express (2-4 Business Days)</strong><span className="shipping-price-tag">{isFreeStandard ? 'FREE' : '₹99'}</span></div>
+                    <div className="shipping-title-row"><strong>Standard Pan-India Express (2-4 Business Days)</strong><span className="shipping-price-tag">{isFreeStandard ? 'FREE' : formatPrice(standardFee)}</span></div>
                     <p>Eco-friendly carbon-neutral surface & air shipping in protective recycled paper cushioning.</p>
                   </div>
                 </div>
                 <div className={`shipping-option-card ${shippingMethod === 'express' ? 'selected' : ''}`} onClick={() => setShippingMethod('express')}>
                   <div className="shipping-radio"><div className={`radio-dot ${shippingMethod === 'express' ? 'active' : ''}`} /></div>
                   <div className="shipping-details">
-                    <div className="shipping-title-row"><strong>Blue Dart / Delhivery Air Express Priority (1-2 Days)</strong><span className="shipping-price-tag">₹199</span></div>
+                    <div className="shipping-title-row"><strong>Blue Dart / Delhivery Air Express Priority (1-2 Days)</strong><span className="shipping-price-tag">{formatPrice(expressFee)}</span></div>
                     <p>Guaranteed 1-2 business day expedited air cargo delivery with real-time GPS tracking.</p>
                   </div>
                 </div>
                 <div className={`shipping-option-card ${shippingMethod === 'whiteglove' ? 'selected' : ''}`} onClick={() => setShippingMethod('whiteglove')}>
                   <div className="shipping-radio"><div className={`radio-dot ${shippingMethod === 'whiteglove' ? 'active' : ''}`} /></div>
                   <div className="shipping-details">
-                    <div className="shipping-title-row"><strong>White-Glove Luxury Delivery + Keepsake Gold Foil Box & Wax Seal</strong><span className="shipping-price-tag">₹399</span></div>
+                    <div className="shipping-title-row"><strong>White-Glove Luxury Delivery + Keepsake Gold Foil Box & Wax Seal</strong><span className="shipping-price-tag">{formatPrice(whitegloveFee)}</span></div>
                     <p>Signature embossed presentation box, hand-stamped wax seal, and priority handling.</p>
                   </div>
                 </div>
@@ -563,7 +573,7 @@ export default function CheckoutPage({
                 <button type="button" className="btn-luxury-outline" onClick={() => setCurrentStep(2)}><ArrowLeft size={16} /><span>Back to Shipping</span></button>
                 <button type="button" className="btn-luxury-cta place-order-btn" onClick={handlePlaceOrder} disabled={placingOrder}>
                   <Lock size={15} />
-                  <span>{placingOrder ? 'Placing Order...' : `Complete Order • ₹${Math.round(grandTotal).toLocaleString('en-IN')}`}</span>
+                  <span>{placingOrder ? 'Placing Order...' : `Complete Order • ${formatPrice(grandTotal)}`}</span>
                 </button>
                 {orderError && (
                   <p style={{ color: '#B33A3A', fontSize: '0.85rem', marginTop: '8px' }}>{orderError}</p>
@@ -584,7 +594,7 @@ export default function CheckoutPage({
                 <div className="summary-item" key={item.id}>
                   <div className="summary-img-wrap"><img src={item.image} alt={item.title} /><span className="summary-item-qty">{item.quantity}</span></div>
                   <div className="summary-item-details"><h4>{item.title}</h4><span>100% Soy &bull; 11 oz</span></div>
-                  <span className="summary-item-price">₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
+                  <span className="summary-item-price">{formatPrice((convertPrice(item.price, item.priceEur) ?? item.price) * item.quantity)}</span>
                 </div>
               ))}
             </div>
@@ -598,11 +608,11 @@ export default function CheckoutPage({
             </form>
             {promoMessage && (<p className={`coupon-feedback ${discountPercent > 0 ? 'success' : 'error'}`}>{promoMessage}</p>)}
             <div className="summary-totals-breakdown">
-              <div className="summary-row"><span>Subtotal</span><span>₹{subtotal.toLocaleString('en-IN')}</span></div>
-              {discountPercent > 0 && (<div className="summary-row discount"><span>VIP Discount ({discountPercent}%)</span><span>-₹{discountAmount.toLocaleString('en-IN')}</span></div>)}
-              <div className="summary-row"><span>Shipping</span><span>{shippingCost === 0 ? 'FREE' : `₹${shippingCost}`}</span></div>
-              <div className="summary-row"><span>GST (Included)</span><span>₹0.00</span></div>
-              <div className="summary-row total-row"><span>Total Due</span><span>₹{Math.round(grandTotal).toLocaleString('en-IN')}</span></div>
+              <div className="summary-row"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
+              {discountPercent > 0 && (<div className="summary-row discount"><span>VIP Discount ({discountPercent}%)</span><span>-{formatPrice(discountAmount)}</span></div>)}
+              <div className="summary-row"><span>Shipping</span><span>{shippingCost === 0 ? 'FREE' : formatPrice(shippingCost)}</span></div>
+              <div className="summary-row"><span>GST (Included)</span><span>{formatPrice(0)}</span></div>
+              <div className="summary-row total-row"><span>Total Due</span><span>{formatPrice(grandTotal)}</span></div>
             </div>
             <div className="summary-guarantee-note"><ShieldCheck size={16} /><span>Happiness Guarantee & Complimentary Exchanges</span></div>
           </div>
