@@ -9,8 +9,8 @@
  * The cookie `annette_country` will contain a 2-letter ISO country code (e.g. "IN", "DE", "US").
  */
 export const config = {
-  // Run on all routes except static assets, API routes, and Next.js internals
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  // Run on all routes except static assets, API routes, and favicon files
+  matcher: ['/((?!api|_next/static|_next/image|favicon|logo\\.png|placeholder\\.svg|icons\\.svg|video).*)'],
 };
 
 export default function middleware(request) {
