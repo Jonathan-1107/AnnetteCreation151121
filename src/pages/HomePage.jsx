@@ -25,7 +25,11 @@ export default function HomePage({
         style={{ backgroundImage: `url(${heroLuxuryImg})` }}
       >
         <div className="hero-overlay" />
+        <div className="hero-ambient-glow" aria-hidden="true" />
         <div className="hero-content">
+          <div className="candle-flame-wrapper" aria-hidden="true">
+            <div className="candle-flame-icon" />
+          </div>
           <span className="hero-eyebrow">Artisanal craftsmanship from India &bull; 100% Organic Soy</span>
           <h1 className="hero-title">Annette Pure</h1>
           <p className="hero-tagline">
