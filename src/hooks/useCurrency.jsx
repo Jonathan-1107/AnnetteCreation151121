@@ -111,16 +111,22 @@ export function CurrencyProvider({ children }) {
       const found = currencyByCode(saved);
       if (found) { setCurrency(found); return; }
     }
-    // 2. Vercel geo cookie
-    const detectedCountry = getCountryFromCookie();
-    if (detectedCountry) {
-      setCountry(detectedCountry);
-      const detected = COUNTRY_CURRENCY_MAP[detectedCountry] || DEFAULT_CURRENCY;
-      setCurrency(detected);
-      return;
-    }
-    // 3. Default to INR
-    setCurrency(DEFAULT_CURRENCY);
+
+    // 2. Client-side IP detection (supports VPN and international visitors)
+    fetch('https://api.country.is/')
+      .then((res) => res.json())
+      .then((data) => {
+        const detectedCountry = data?.country?.toUpperCase();
+        if (detectedCountry) {
+          setCountry(detectedCountry);
+          const detected = COUNTRY_CURRENCY_MAP[detectedCountry] || DEFAULT_CURRENCY;
+          setCurrency(detected);
+        }
+      })
+      .catch(() => {
+        // Fallback to INR if detection is blocked by ad-blocker
+        setCurrency(DEFAULT_CURRENCY);
+      });
   }, []);
 
   // --- Fetch live EUR-based rates whenever needed ---

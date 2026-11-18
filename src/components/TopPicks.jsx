@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../supabaseClient';
+import PriceDisplay from './PriceDisplay';
 
 const PLACEHOLDER_IMAGE = '/placeholder.svg';
 const AUTO_ADVANCE_MS = 5000;
@@ -16,7 +17,7 @@ export default function TopPicks({ onNavigate, onQuickView, onAddToCart }) {
       const { data, error } = await supabase
         .from('products')
         .select(`
-          id, name, description, base_price, image_url,
+          id, name, description, base_price, price_eur, image_url,
           categories ( name, collections ( name ) )
         `)
         .eq('is_top_pick', true)
@@ -35,7 +36,8 @@ export default function TopPicks({ onNavigate, onQuickView, onAddToCart }) {
         season: p.categories?.collections?.name || '',
         description: p.description || '',
         image: p.image_url || PLACEHOLDER_IMAGE,
-        price: p.base_price || 0
+        price: p.base_price || 0,
+        priceEur: p.price_eur ?? null
       }));
 
       setPicks(shaped);
@@ -115,7 +117,9 @@ export default function TopPicks({ onNavigate, onQuickView, onAddToCart }) {
           <p className="top-picks-desc">{current.description}</p>
 
           <div className="top-picks-details">
-            <span className="top-picks-price">₹{current.price.toLocaleString('en-IN')}</span>
+            <span className="top-picks-price">
+              <PriceDisplay priceInr={current.price} priceEur={current.priceEur} />
+            </span>
             <span className="top-picks-spec">100% Pure Soy</span>
           </div>
 
