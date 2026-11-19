@@ -506,3 +506,145 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 50%;
   }
 }
+
+
+/* ============================================================
+   FIX NAVIGATION OVERLAP & EXPAND HEADER BREATHING ROOM
+   ============================================================ */
+.header-container {
+  max-width: 1680px !important;
+  gap: clamp(8px, 1.2vw, 24px) !important;
+  padding: 0 clamp(12px, 1.8vw, 32px) !important;
+}
+
+.desktop-nav {
+  margin: 0 clamp(4px, 0.8vw, 16px) !important;
+  flex-shrink: 1 !important;
+}
+
+.nav-menu {
+  gap: clamp(6px, 1vw, 16px) !important;
+}
+
+.nav-link-btn {
+  font-size: clamp(0.7rem, 0.8vw, 0.82rem) !important;
+  padding: 6px 4px !important;
+  white-space: nowrap !important;
+}
+
+.header-actions {
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: clamp(6px, 0.8vw, 12px) !important;
+}
+
+.currency-selector-wrap {
+  margin-right: 0 !important;
+}
+
+.currency-selector {
+  font-size: 11px !important;
+  padding: 4px 18px 4px 6px !important;
+  min-width: 62px !important;
+  max-width: 78px !important;
+}
+
+.magazine-nav-link {
+  padding: 4px 8px !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 0.04em !important;
+}
+
+/* ============================================================
+   GOLD COMET WAVE ACROSS THE CANDLE GLASSES (Hero Section)
+   ============================================================ */
+.hero-comet-track {
+  position: absolute;
+  bottom: 12%;
+  left: 0;
+  width: 100%;
+  height: 180px;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+/* Soft gold shimmer band sweeping along the candle glass jars */
+.hero-comet-beam {
+  position: absolute;
+  top: 50%;
+  left: -40%;
+  width: 35%;
+  height: 80px;
+  transform: translateY(-50%) skewX(-24deg);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 215, 120, 0.08) 35%,
+    rgba(255, 235, 170, 0.45) 70%,
+    rgba(255, 255, 255, 0.85) 90%,
+    rgba(255, 215, 120, 0.95) 98%,
+    transparent 100%
+  );
+  filter: blur(8px);
+  animation: cometSweep 7.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  box-shadow: 0 0 35px rgba(255, 200, 90, 0.6);
+}
+
+/* Bright sparkling comet head */
+.hero-comet-spark {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 15%, #ffe699 50%, rgba(212, 160, 60, 0.8) 80%, transparent 100%);
+  box-shadow: 
+    0 0 12px 4px rgba(255, 240, 200, 0.9),
+    0 0 28px 10px rgba(230, 180, 70, 0.65),
+    0 0 60px 18px rgba(200, 140, 30, 0.35);
+  animation: sparkTwinkle 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes cometSweep {
+  0% {
+    left: -40%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  45% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.85;
+  }
+  90% {
+    left: 120%;
+    opacity: 0;
+  }
+  100% {
+    left: 120%;
+    opacity: 0;
+  }
+}
+
+@keyframes sparkTwinkle {
+  0% { transform: translateY(-50%) scale(0.85); opacity: 0.85; }
+  100% { transform: translateY(-50%) scale(1.25); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .hero-comet-track {
+    bottom: 8%;
+    height: 120px;
+  }
+  .hero-comet-beam {
+    width: 45%;
+    height: 50px;
+  }
+}

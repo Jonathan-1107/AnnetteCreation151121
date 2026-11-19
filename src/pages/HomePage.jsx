@@ -26,6 +26,14 @@ export default function HomePage({
       >
         <div className="hero-overlay" />
         <div className="hero-ambient-glow" aria-hidden="true" />
+        
+        {/* Gold Comet Wave travelling along the candle glasses */}
+        <div className="hero-comet-track" aria-hidden="true">
+          <div className="hero-comet-beam">
+            <span className="hero-comet-spark" />
+          </div>
+        </div>
+
         <div className="hero-content">
           <div className="candle-flame-wrapper" aria-hidden="true">
             <div className="candle-flame-icon" />
