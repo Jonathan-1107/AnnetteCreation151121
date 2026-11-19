@@ -207,17 +207,19 @@ export default function Header({
             </select>
           </div>
                    <div className="header-icons">
-            {/* Magazine Download Icon */}
+            {/* Magazine Download Highlight Pill */}
             <a 
               href="/Annette_Pure_Magazine.pdf" 
               download="Annette_Pure_Magazine.pdf"
-              className="icon-btn" 
+              className="magazine-nav-link" 
               aria-label="Download Annette Pure Magazine"
-              title="Download Magazine (PDF)"
+              title="Download Annette Pure Magazine (PDF)"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <BookOpen size={19} strokeWidth={1.5} />
+              <BookOpen size={16} strokeWidth={1.75} className="magazine-nav-icon" />
+              <span className="magazine-nav-label">Magazine</span>
+              <span className="magazine-pulse-dot" aria-hidden="true" />
             </a>
 
             <button 

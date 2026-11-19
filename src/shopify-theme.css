@@ -431,3 +431,78 @@ h1, h2, h3, h4, h5, h6 {
     transform: translateY(0);
   }
 }
+
+
+/* ============================================================
+   MAGAZINE HIGHLIGHT BADGE & PILL IN NAVIGATION
+   ============================================================ */
+.magazine-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(184, 146, 90, 0.12);
+  border: 1px solid rgba(184, 146, 90, 0.35);
+  color: #8a6834;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-right: 4px;
+}
+
+.magazine-nav-link:hover {
+  background: linear-gradient(135deg, #b8925a 0%, #99733e 100%);
+  color: #ffffff;
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(184, 146, 90, 0.3);
+}
+
+.magazine-nav-link:hover .magazine-nav-icon {
+  transform: rotate(-6deg) scale(1.08);
+}
+
+.magazine-nav-icon {
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.magazine-nav-label {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Optional tiny animated pulse dot */
+.magazine-pulse-dot {
+  width: 5px;
+  height: 5px;
+  background-color: #b8925a;
+  border-radius: 50%;
+  display: inline-block;
+  animation: magPulse 2s infinite;
+}
+
+.magazine-nav-link:hover .magazine-pulse-dot {
+  background-color: #ffffff;
+}
+
+@keyframes magPulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.4); opacity: 1; box-shadow: 0 0 6px rgba(184, 146, 90, 0.8); }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+@media (max-width: 600px) {
+  .magazine-nav-label {
+    display: none; /* Icon-only on very compact mobile */
+  }
+  .magazine-nav-link {
+    padding: 6px;
+    border-radius: 50%;
+  }
+}
