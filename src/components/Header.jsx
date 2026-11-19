@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, User, ShoppingBag, Heart, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { Search, User, ShoppingBag, Heart, X, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
 import { useCatalogNav } from '../hooks/useCatalogNav';
 import { useCurrency, SWITCHER_CURRENCIES } from '../hooks/useCurrency.jsx';
 import logoFloralIcon from '../assets/logo-floral.png';
@@ -206,7 +206,20 @@ export default function Header({
               ))}
             </select>
           </div>
-          <div className="header-icons">
+                   <div className="header-icons">
+            {/* Magazine Download Icon */}
+            <a 
+              href="/Annette_Pure_Magazine.pdf" 
+              download="Annette_Pure_Magazine.pdf"
+              className="icon-btn" 
+              aria-label="Download Annette Pure Magazine"
+              title="Download Magazine (PDF)"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <BookOpen size={19} strokeWidth={1.5} />
+            </a>
+
             <button 
               className="icon-btn" 
               onClick={onSearchOpen} 
